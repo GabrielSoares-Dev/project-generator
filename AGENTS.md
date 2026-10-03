@@ -1,0 +1,27 @@
+## What this repository is
+
+The Template (this repository, named **Project Generator**): a project factory that generates Derived Projects (backend, web frontend and mobile app repositories) for AI-driven development. It is never copied; its skills read the recipes and create new repositories. Vocabulary in `GLOSSARY.md`, decisions in `docs/adr/`.
+
+- `recipes/decision-guide.md`: how a Derived Project's technologies are chosen.
+- `recipes/backend/`, `recipes/frontend/`, `recipes/mobile/`: Stack Recipes.
+- `recipes/quality-gates.md`, `recipes/coding-standards.md`: what every generated repository must pass and how its code is written.
+- `recipes/repository-layout.md`, `recipes/autonomous-runs.md`, `recipes/new-project.md`: what a generated repository contains, how the agent works in it, and how it is created.
+- `recipes/shared-workflows.md`: the catalog of reusable CI and deploy workflows every generated repository calls.
+
+## Language
+
+Write everything technical that lands in the repository or on GitHub in English: code, logs, error codes, docs, tickets, specs, ADRs, commit messages and pull request descriptions. Text shown to end users of a Derived Project is in that product's language. Conversation with the user may be in Portuguese.
+
+## Agent skills
+
+### Issue tracker
+
+Issues for the Template itself live as local markdown files under `.scratch/<feature>/`. Derived Projects use GitHub Issues instead. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
