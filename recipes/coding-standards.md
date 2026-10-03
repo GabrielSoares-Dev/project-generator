@@ -58,6 +58,8 @@ Hard limits, failing CI:
 | File / class length | 300 lines | Checkstyle `FileLength` | PHPMD `ExcessiveClassLength` | ESLint `max-lines` |
 | Duplicated code | blocks of 50+ repeated tokens | PMD CPD | PMD CPD (PHP) | jscpd |
 
+A tool's threshold is not always the limit: PHPMD reports a value **at or above** its `minimum` / `reportLevel`, so "at most 30 lines" is configured as 31 (see `recipes/backend/php.md`). Each recipe configures the tool so the table's value is the largest value that still passes.
+
 ## Writing rules
 
 | Rule | Java | PHP | Frontend / mobile |

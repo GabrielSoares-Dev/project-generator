@@ -14,7 +14,7 @@ The application is always a plain HTTP server. Nothing in any layer is specific 
 
 Every backend publishes an **OpenAPI specification** generated from its code (routes, request bodies, responses). It is the contract the frontend generates its client from (ADR-0008).
 
-Every backend repository ships a **dev container** (`.devcontainer/`) built on its own `docker-compose` (app + database), with the language toolchain, the Quality Gate tools and Lefthook preinstalled, so nothing but Docker is needed on the host and the machine, CI and cloud sessions run the same versions.
+Every backend repository ships a **dev container** (`.devcontainer/`) built on its own `docker-compose` (app + database), with the language toolchain, the Quality Gate tools and Lefthook preinstalled, so nothing but Docker is needed on the host and the machine, CI and cloud sessions run the same versions. It also installs the stack's VS Code extensions inside the container (`recipes/vscode-extensions.md`). Inside it, everything runs through the `project` script (`project start:dev`, `project check`…), the same short commands in every repository (`recipes/dev-commands.md`).
 
 Every backend has **one multi-stage `Dockerfile` with two targets**:
 

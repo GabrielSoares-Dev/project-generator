@@ -11,6 +11,8 @@ What `/new-project` writes into every repository it creates, besides the code. R
 ├── CLAUDE.md                 "@AGENTS.md" only
 ├── AGENTS.md                 essential rules + where to find the rest
 ├── CODING_STANDARDS.md       from recipes/coding-standards.md; /code-review's criterion
+├── README.md                 how to run the repository: getting started, the dev commands, how to run each Quality Gate, layout, configuration
+├── project                   dev commands script: `./project start:dev`, `./project check`... (recipes/dev-commands.md)
 ├── .template-version         the Template version this repository's rules came from (used by /sync-template)
 ├── GLOSSARY.md               the project's domain vocabulary
 ├── docs/
@@ -24,7 +26,8 @@ What `/new-project` writes into every repository it creates, besides the code. R
 ├── .claude/
 │   ├── skills/               vendored agent skills (ADR-0005)
 │   └── settings.json         agent permissions and hooks for this project
-└── src/, tests/, Dockerfile, .devcontainer/, lefthook.yml, ...
+├── .vscode/                  extensions.json (frontend and mobile) and settings.json: the stack's VS Code extensions and format on save (recipes/vscode-extensions.md)
+└── src/, tests/, Dockerfile, .devcontainer/ (backend: lists its extensions), lefthook.yml, ...
 ```
 
 ## Vendored skills

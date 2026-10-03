@@ -37,12 +37,35 @@ The **Code rules, Testing rules and Extra mechanisms rules** of `recipes/backend
 
 ## Tests and quality
 
-- **PHPUnit + Mockery** (as in the boilerplate).
+- **PHPUnit + Mockery** (as in the boilerplate), with PHPStan's Mockery extension.
 - Integration tests against **MySQL or PostgreSQL in a container**, never SQLite in memory (ADR-0003).
 - **Pint** with the boilerplate's `pint.json` for formatting.
 - **PHPStan at max level**, with **Larastan** on Laravel.
-- **Deptrac** for architecture validation; **PHPMD** for the size and complexity limits of `CODING_STANDARDS.md`.
-- **80% coverage** on `Domain` + `Application` (the boilerplate's `--min=80`).
+- **Deptrac** for architecture validation (the framework namespaces are a layer that only `Infra` may use); **PHPMD**, installed in its own `tools/phpmd/` tree (see Generating the project), for the size and complexity limits of `CODING_STANDARDS.md`.
+- **80% coverage** on `Domain` + `Application`, checked by a script over the Clover report (PHPUnit has no minimum option, unlike the boilerplate's `--min=80`).
+
+## Generating the project
+
+Learned from generating a Laravel backend end to end. Follow in this order:
+
+1. **Create the skeleton with Composer in a container** (`composer create-project laravel/laravel`), so the host needs only Docker.
+2. **Delete the skeleton's leftovers before creating anything of ours.** Besides the Lean Laravel list below, delete the skeleton's `AGENTS.md`, `CLAUDE.md` and `README.md` (the Template writes its own), `app/`, `tests/Feature`, `tests/Unit`, `tests/TestCase.php`, `database/factories`, `database/seeders`, the default migrations and the `session` and `mail` configs. Keep `config/filesystems.php`, reduced to the `local` disk with `serve` off: without the file the framework falls back to a default that serves `/storage/{path}`. The order matters: the skeleton's `tests/Unit` and our `tests/unit` are the same folder on a case-insensitive file system (Windows, macOS), and a folder created with the wrong case breaks the Composer autoload on Linux CI.
+3. **Autoload** `InvoiceManager\` → `src/` **and** `InvoiceManager\Infra\` → `src/Infra/`, with `useAppPath` pointing at `src/Infra`. Without the second entry Laravel cannot detect the application namespace and `artisan route:list` and the `make:*` commands fail.
+4. **Test autoload**: `Tests\Unit\` → `tests/unit/`, `Tests\Integration\` → `tests/integration/`, `Tests\Helpers\` → `tests/Helpers/` (PSR-4 is case-sensitive on Linux, so each lowercase folder gets its own entry).
+5. **Routing**: `api:` with an empty `apiPrefix` (`GET /health` at the root, resources under `/v1`), no `web:` routing; the request ID filter prepended globally; Problem Details registered as the exception renderer.
+6. **Database**: only the `pgsql` connection, with a 3-second connect timeout. Integration tests use their own database (`app_test`, created by an init script mounted into the PostgreSQL container), never the development one. With the PostgreSQL 18 image the volume is mounted at `/var/lib/postgresql`, not `/var/lib/postgresql/data`.
+7. **`config:cache` at container start, not at build.** Caching configuration at build bakes the build-time environment into the image; the entrypoint runs it when the container starts, with the real environment. `route:cache` and `event:cache` stay at build.
+8. **OpenAPI with Scramble**: `api_path` empty so `/health` is documented, a fixed contract `version`, the local server URL, and the minimal `filesystems` config (item 2) so the framework's `/storage/{path}` route does not enter the contract. Run the formatter again after publishing any vendor config: published files lack `declare_strict_types` and fail the lint gate. `openapi.json` is committed and a CI gate fails when it differs from what the code generates.
+9. **Tools in their own tree when they conflict with Laravel.** The current PHPMD requires Symfony components older than the ones Laravel's latest major needs, so Composer silently resolves it to a years-old release that crashes on a current PHP. PHPMD lives in `tools/phpmd/` with its own `composer.json` and `vendor/`, and runs with deprecation notices of the tool itself silenced (`php -d error_reporting=8191`). Check any new tool the same way: if Composer picks a very old version, isolate it.
+10. **PHPStan** also loads `phpstan/phpstan-mockery`; without it every mocked port is reported as the wrong type. Docblocks type array contents (`array<mixed>`), closures (`Closure(Request): Response`) and Laravel's untyped returns; `config()->string()` / `->array()` give typed configuration reads.
+11. **Thresholds are inclusive in PHPMD**: a limit of "at most 30 lines" is `minimum` 31, "at most 4 parameters" is 5, "complexity at most 10" is `reportLevel` 11, "at most 300 lines" is 301.
+12. **Coverage**: PHPUnit has no minimum-coverage option, so a small script reads the Clover report and fails below 80%. The coverage scope (`Domain` + `Application`) is set in `phpunit.xml`.
+13. **Pint's Laravel preset writes test methods in `snake_case`** (`should_throw_when_role_already_exists`); the `#[TestDox]` attribute carries the readable sentence.
+14. **`audit` is a Composer command**, so the `project` script calls `composer audit` directly instead of a script of that name; the audit runs in `tools/phpmd/` too.
+
+## Dev commands
+
+The `project` script (`recipes/dev-commands.md`) maps each command to a **Composer script** of the same name in `composer.json` (`start:dev`, `test:unit`, `lint`, `typecheck`, `arch`, `check`…), so the definitions live where PHP tools expect them and `composer <name>` works too. `check` runs, in CI order: Pint `--test`, PHPStan, Deptrac, PHPMD, the unit and integration tests with the coverage check, and `composer audit`. `start:dev` runs the FrankenPHP server of the `dev` target.
 
 ## Conventions enforced by tools
 
@@ -80,7 +103,7 @@ PHP is shared-nothing (every request starts from scratch under php-fpm and Bref)
 | OpenAPI (generated from code) | Scramble | NelmioApiDocBundle | swagger-php (attributes) |
 | JWT | lcobucci/jwt (replaces tymon/jwt-auth) | lexik/jwt-authentication-bundle | lcobucci/jwt |
 | Passwords | Laravel Hash (Argon2id) | PasswordHasher (Argon2id) | `password_hash` (Argon2id) |
-| Health check (`GET /health`) | spatie/laravel-health | own controller | own controller |
+| Health check (`GET /health`) | own `CheckHealthUseCase` behind ports (database, version), so it follows the architecture rules | own controller | own controller |
 | JSON logs | Monolog | MonologBundle | Monolog |
 | Outbound HTTP + retry | Laravel HTTP client (`retry()`) | HttpClient + RetryableHttpClient | Guzzle + retry middleware |
 | Circuit breaker | ackintosh/ganesha | ackintosh/ganesha | ackintosh/ganesha |
