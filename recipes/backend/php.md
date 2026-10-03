@@ -61,6 +61,7 @@ Learned from generating a Laravel backend end to end. Follow in this order:
 11. **Thresholds are inclusive in PHPMD**: a limit of "at most 30 lines" is `minimum` 31, "at most 4 parameters" is 5, "complexity at most 10" is `reportLevel` 11, "at most 300 lines" is 301.
 12. **Coverage**: PHPUnit has no minimum-coverage option, so a small script reads the Clover report and fails below 80%. The coverage scope (`Domain` + `Application`) is set in `phpunit.xml`.
 13. **Pint's Laravel preset writes test methods in `snake_case`** (`should_throw_when_role_already_exists`); the `#[TestDox]` attribute carries the readable sentence.
+15. **Git setup before the first commit.** The skeleton's `.gitignore` ignores `/.vscode`, which the Template commits (`recipes/vscode-extensions.md`), and knows nothing about our output: remove `/.vscode` from it and add `/build`, `/.deptrac.cache` and `/tools/*/vendor`. Keep the skeleton's `.gitattributes` (`* text=auto eol=lf`): without forced LF, a clone on Windows turns `project` and `docker/entrypoint.sh` into CRLF files that fail inside the Linux container. Record the executable bit of both scripts (`git update-index --chmod=+x`). Before pushing, check that `.env`, `vendor/` and `build/` are not tracked and that `composer.lock` and `tools/phpmd/composer.lock` are.
 14. **`audit` is a Composer command**, so the `project` script calls `composer audit` directly instead of a script of that name; the audit runs in `tools/phpmd/` too.
 
 ## Dev commands
