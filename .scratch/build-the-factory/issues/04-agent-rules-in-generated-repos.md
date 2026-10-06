@@ -13,4 +13,4 @@
 - [ ] The settings block `terraform apply`, merges, force pushes, pushes to `main`, reading `.env` files and triggering deploys
 - [ ] Lefthook runs lint, format and typecheck on pre-commit, and unit tests and architecture validation on pre-push; a deliberately broken commit is rejected
 - [ ] `.template-version` records the current Template version
-- [ ] The VS Code extensions of the chosen stack are listed as in `recipes/vscode-extensions.md` (in `.devcontainer/devcontainer.json` for the backend, `.vscode/extensions.json` for the frontend), with format on save using the lint gate's formatter
+- [ ] The VS Code extensions of the chosen stack are listed as in `recipes/vscode-extensions.md` (in `.devcontainer/devcontainer.json` for the backend and the frontend, plus `.vscode/extensions.json` for the frontend), with format on save using the lint gate's formatter

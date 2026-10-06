@@ -4,8 +4,8 @@ Every generated repository tells VS Code which extensions it needs, so opening t
 
 ## Where the list goes
 
-- **Backend repositories** (dev container): `customizations.vscode.extensions` in `.devcontainer/devcontainer.json`. They are installed **inside the container**, next to the toolchain they talk to, so nothing is installed on the host.
-- **Web frontend and mobile repositories** (no dev container, they run on the host): `.vscode/extensions.json` with `recommendations`; VS Code offers to install them when the folder is opened.
+- **Backend and web frontend repositories** (dev container): `customizations.vscode.extensions` in `.devcontainer/devcontainer.json`. They are installed **inside the container**, next to the toolchain they talk to, so nothing is installed on the host. The web frontend also carries the same list in `.vscode/extensions.json`, for whoever runs it on the host.
+- **Mobile repositories** (no dev container, they run on the host): `.vscode/extensions.json` with `recommendations`; VS Code offers to install them when the folder is opened.
 - The format-on-save settings that go with them live in `.vscode/settings.json` (committed), using the same formatter the lint gate checks, so saving a file never creates a lint failure.
 
 ## Every repository
@@ -42,4 +42,4 @@ Repositories that hold Terraform (the backend) add **HashiCorp Terraform**, `has
 - **Only what the stack uses.** A PHP project never lists the Java pack; a recipe that adds a tool (a new linter, a new test runner) adds its extension in the same change.
 - **Extensions never replace a gate.** They give feedback while typing; the Quality Gates and the `project` commands (`recipes/dev-commands.md`) remain the authority.
 - **Editor settings follow the tools.** Format on save uses the formatter of the lint gate (Pint, Prettier, google-java-format through Spotless, gofmt); no personal preferences are committed.
-- The README's *Requirements* section mentions the Dev Containers extension for backends; the stack's own extensions are installed automatically and need no mention.
+- The README's *Requirements* section mentions the Dev Containers extension for backends and web frontends; the stack's own extensions are installed automatically and need no mention.

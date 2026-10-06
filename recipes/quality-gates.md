@@ -15,7 +15,7 @@ Every repository runs **all** of the following gates **whenever its stack has a 
 | **Accessibility** (frontend) | Accessibility lint rules (`eslint-plugin-jsx-a11y` in React, angular-eslint template accessibility rules in Angular) plus automated **axe** checks inside component tests. |
 | **Architecture validation** | The dependency rules of the architecture hold, checked by a tool rather than by review. |
 | **Bundle size** (frontend) | Initial bundle at most 500 KB (warning) / 1 MB (error): Angular budgets, size-limit in React. |
-| **Dependency audit** | `pnpm audit` (or the language's equivalent) blocks high and critical vulnerabilities. Known, unfixable or non-applicable ones go in a versioned allowlist, each entry with a reason and an expiry date. |
+| **Dependency audit** | `pnpm audit` (or the language's equivalent) blocks high and critical vulnerabilities. Known, unfixable or non-applicable ones go in a versioned allowlist, each entry with a reason and an expiry date; a small script over the package manager's JSON report applies it and also fails when an entry has expired. |
 | **IaC checks** | When the repository holds Terraform: format, validate and lint. |
 
 ## Local hooks
@@ -30,7 +30,7 @@ CI remains the authority: hooks can be bypassed, CI cannot.
 ## Conventions
 
 - **Commit messages** follow Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`, `ci:`…), in English. The agent and the human follow it; no commitlint tool enforces it.
-- **Test names** read as a specification, in English, front and back: "should <result> when <condition>". Java: `shouldThrowWhenRoleAlreadyExists()` with `@DisplayName("should throw when role already exists")`; frontend: `it('should show an error when the name is empty')`. Test classes and files are named after what they test (`CreateRoleUseCaseTest`, `Button/index.spec.tsx`).
+- **Test names** read as a specification, in English, front and back: "should <result> when <condition>". Java: `shouldThrowWhenRoleAlreadyExists()` with `@DisplayName("should throw when role already exists")`; frontend: `it('should show an error when the name is empty')`. Test classes and files are named after what they test (`CreateRoleUseCaseTest`, `button/button.spec.tsx`).
 - **Environment variables**: `UPPER_SNAKE_CASE` with a subject prefix (`DB_HOST`, `DB_NAME`, `AUTH_JWT_SECRET`, `LOG_LEVEL`); frontend ones carry the framework prefix (`VITE_API_URL`).
 - **Events**: past tense, PascalCase (`RoleCreated`, `OrderPaid`).
 - **Queues and topics**: kebab-case `<project>-<subject>`, `-dlq` suffix for dead-letter queues and `-dev` for the Local Review resources (`invoice-manager-order-paid`, `invoice-manager-order-paid-dlq`).
@@ -63,7 +63,7 @@ CI remains the authority: hooks can be bypassed, CI cannot.
 **Frontend** (`recipes/frontend/architecture.md`):
 - Each level of `components/` (atoms → molecules → organisms → templates) imports only from the levels below it.
 - Atoms, molecules and templates never import `state/` or `services/`.
-- Only `organisms` and `pages` import `state/`; only `state/` imports `services/`; only `services/` imports `shared/http`.
+- Only the `hooks/` folders of `pages` import `services/` and `state/`; only `services/` imports `shared/http`.
 - `shared/` imports nothing from the rest of the app.
 
 ## Candidate tools per stack

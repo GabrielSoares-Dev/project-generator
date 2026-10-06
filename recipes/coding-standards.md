@@ -36,7 +36,7 @@ public class CreateRoleUseCase {
 ## Component shape (frontend)
 
 - **One component per file.** (`react/no-multi-comp`; angular-eslint)
-- **Components only render**: data access, calls and screen rules live in `state/` (React hooks, Angular services with signals); the component reads and calls. (dependency-cruiser, architecture rule 4)
+- **Components are dumb**: screens are split into sections, every component receives its data through props, and the data access, calls and screen rules live in the page's own `hooks/` folder (React hooks; Angular services with signals), which returns the props of each section. Very small UI-only logic (at most 5 statements in the component function) may stay in the component. Types live in `types/` folders, never in the component or hook file. (ESLint `max-statements` and the type selectors, dependency-cruiser rule 3)
 - **No logic in templates / JSX**: complex conditions and computations become a descriptively named variable or function before the `return`, or a `computed()`. (review; `@angular-eslint/template/no-call-expression`)
 - **At most 5 props / inputs**; beyond that, group them into an object or split the component. (custom ESLint rule / review)
 - **No prop drilling past 2 levels**: use feature state or context instead. (review)
@@ -73,7 +73,16 @@ A tool's threshold is not always the limit: PHPMD reports a value **at or above*
 | **No sentinel returned from lookups**: `Optional` in Java, nullable type in PHP, typed `undefined` in TypeScript | PMD `ReturnEmptyCollectionRatherThanNull` + review | PHPStan max level + review | `strictNullChecks` + review |
 | **No premature abstraction** (YAGNI): extract only on the third repetition | review | review | review |
 
-Comments are not regulated by these standards.
+## Comments
+
+Code carries **no explanatory comments**: names, types and small functions say what the code does. A comment is kept only when a tool reads it:
+
+- type annotations a static analyzer needs (PHPStan `@param array<…>`, `@return`, `@var`, `@throws`, `@template`);
+- documentation a tool publishes (the controller docblock that Scramble turns into the OpenAPI summary and description);
+- directives (`/// <reference …>`, `# syntax=` in a Dockerfile, a shebang, a lint-disable line with its reason, `@ts-expect-error` with its reason);
+- the `comment` field of a rule in dependency-cruiser, which its reports print.
+
+This applies to tests too: no `// given` / `// when` / `// then`; the three phases are separated by one blank line. The explanatory comments that skeletons and published vendor configuration files ship with (Laravel's configuration files, Scramble's, the generated `public/index.php`) are removed when the repository is generated, with a tokenizer-based script so strings are never touched, followed by the formatter. `/code-review` rejects a new explanatory comment.
 
 ## Tooling
 

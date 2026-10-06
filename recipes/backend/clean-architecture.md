@@ -18,10 +18,12 @@ Every backend repository ships a **dev container** (`.devcontainer/`) built on i
 
 Every backend has **one multi-stage `Dockerfile` with two targets**:
 
-- **`dev`**: the language toolchain, Quality Gate tools, Lefthook and hot reload; used by `docker-compose` and the dev container for local work.
+- **`dev`**: the language toolchain, Quality Gate tools, Lefthook and hot reload; used by `docker-compose` and the dev container for local work. It starts **idle** (`sleep infinity`): the server runs only through `project start:dev`.
 - **`prod`**: the minimal production image: only what runs, **non-root user**, no build tools, a healthcheck on `/health`, pinned versions. Base image per stack: a minimal JRE (distroless or Temurin) for Java, FrankenPHP for PHP, Node slim / distroless for Node.
 
-The `prod` target is **built in CI on every pull request**, even in projects that run on Lambda from a zip (Bref, Serverless Framework), so switching from function to container stays a configuration change (ADR-0002) and the image never breaks unnoticed. A web frontend gets the same two-target `Dockerfile` only when it turns on SSR; an SPA has none (static files on the CDN), and mobile apps have none.
+The `prod` target is **built in CI on every pull request**, even in projects that run on Lambda from a zip (Bref, Serverless Framework), so switching from function to container stays a configuration change (ADR-0002) and the image never breaks unnoticed. A web frontend has a `Dockerfile` with only the `dev` target (used by its Docker Compose service and its dev container) and gains the `prod` target only when it turns on SSR, since an SPA's production output is static files on the CDN; mobile apps have no `Dockerfile`.
+
+Every backend that serves a frontend allows that frontend's origin through **CORS with credentials**, from an environment variable (`CORS_ALLOWED_ORIGINS`, defaulting to the frontend's local URL), exposing the `X-Request-Id` header and accepting the headers the frontend's HTTP client sends (`X-Requested-With`, `Accept-Language`, `X-Timezone`). An integration test covers the allowed origin, the preflight and a rejected origin. Without it the browser blocks every call even though the API answers.
 
 Every backend exposes **`GET /health`**, which also checks the database connection, for containers, Cloud Run and the deploy workflow, and returns the version currently live.
 
@@ -200,7 +202,7 @@ Each language recipe only states **how** its language and tools meet these rules
 
 ## Testing rules (every language)
 
-- Each test body has three commented blocks, `// given`, `// when`, `// then`, and covers one behaviour; test names follow "should … when …".
+- Each test body has three blocks, given, when and then, separated by one blank line and **without comments** (`recipes/coding-standards.md`, Comments), and covers one behaviour; test names follow "should … when …".
 - **Mocks only for ports** (repositories and services); entities and value objects are always real.
 - **Test data builders** in the tests' helpers folder (`aRole().withName("admin").build()`), instead of assembling objects by hand in each test.
 - Integration tests create data through the API or fixtures and **reset the database between tests**.

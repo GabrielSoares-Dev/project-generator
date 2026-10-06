@@ -27,7 +27,7 @@ What `/new-project` writes into every repository it creates, besides the code. R
 │   ├── skills/               vendored agent skills (ADR-0005)
 │   └── settings.json         agent permissions and hooks for this project
 ├── .vscode/                  extensions.json (frontend and mobile) and settings.json: the stack's VS Code extensions and format on save (recipes/vscode-extensions.md)
-└── src/, tests/, Dockerfile, .devcontainer/ (backend: lists its extensions), lefthook.yml, ...
+└── src/, tests/, Dockerfile, .devcontainer/ (backend and web frontend; lists the extensions), lefthook.yml, ...
 ```
 
 ## Vendored skills
@@ -48,4 +48,4 @@ The generated `.claude/settings.json` blocks what an autonomous agent must never
 
 The vendored `git-guardrails-claude-code` skill adds the hooks that block dangerous git commands. To verify during construction: how the agent's pull requests appear on GitHub (author), to see whether a required approval from the human can be added on top of these rules.
 
-Web frontend and mobile app repositories have the same files, with their own architecture and conventions and no dev container.
+Web frontend and mobile app repositories have the same files, with their own architecture and conventions; the web frontend has a dev container too, the mobile app has none (it runs on the host).
