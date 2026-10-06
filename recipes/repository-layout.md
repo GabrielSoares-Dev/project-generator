@@ -1,6 +1,6 @@
 # Generated repository layout
 
-What `/new-project` writes into every repository it creates, besides the code. Rules reach the agent in three layers:
+What `/new-project` writes into every repository it creates, besides the code; what each rule file holds is in `recipes/agent-rules.md`. Rules reach the agent in three layers:
 
 1. **`AGENTS.md`, short and always loaded** (through `CLAUDE.md` → `@AGENTS.md`): the essential rules and pointers to the detailed docs. Written following `/writing-for-agents`; long always-loaded files hurt the agent, so detail lives in `docs/`.
 2. **Detailed docs, read when a task needs them**, already **resolved for the chosen stack**: a Spring Boot + PostgreSQL project's `docs/architecture.md` speaks only of Spring Boot and PostgreSQL, never of the alternatives.
@@ -25,9 +25,11 @@ What `/new-project` writes into every repository it creates, besides the code. R
 │       └── domain.md
 ├── .claude/
 │   ├── skills/               vendored agent skills (ADR-0005)
+│   ├── hooks/guardrails.sh   blocks what an agent must never run (recipes/agent-rules.md)
 │   └── settings.json         agent permissions and hooks for this project
 ├── .vscode/                  extensions.json (frontend and mobile) and settings.json: the stack's VS Code extensions and format on save (recipes/vscode-extensions.md)
-└── src/, tests/, Dockerfile, .devcontainer/ (backend and web frontend; lists the extensions), lefthook.yml, ...
+├── lefthook.yml              pre-commit and pre-push hooks calling the project script
+└── src/, tests/, Dockerfile, .devcontainer/ (backend and web frontend; lists the extensions), ...
 ```
 
 ## Vendored skills
@@ -46,6 +48,6 @@ The generated `.claude/settings.json` blocks what an autonomous agent must never
 - no reading `.env` files or secrets;
 - no triggering the deploy workflows.
 
-The vendored `git-guardrails-claude-code` skill adds the hooks that block dangerous git commands. To verify during construction: how the agent's pull requests appear on GitHub (author), to see whether a required approval from the human can be added on top of these rules.
+The rules live in `permissions.deny` and in a `PreToolUse` hook, `.claude/hooks/guardrails.sh` (`recipes/agent-rules.md`). The hook is the vendored `git-guardrails-claude-code` script adapted: the original blocks every `git push`, but an Autonomous Run must push its own branch to open a pull request, so only pushes to `main`, force pushes and branch deletions are blocked. To verify during construction: how the agent's pull requests appear on GitHub (author), to see whether a required approval from the human can be added on top of these rules.
 
 Web frontend and mobile app repositories have the same files, with their own architecture and conventions; the web frontend has a dev container too, the mobile app has none (it runs on the host).

@@ -5,7 +5,7 @@ The Template (this repository, named **Project Generator**): a project factory t
 - `recipes/decision-guide.md`: how a Derived Project's technologies are chosen.
 - `recipes/backend/`, `recipes/frontend/` (React: `react.md`), `recipes/mobile/`: Stack Recipes.
 - `recipes/quality-gates.md`, `recipes/coding-standards.md`: what every generated repository must pass and how its code is written.
-- `recipes/repository-layout.md`, `recipes/autonomous-runs.md`, `recipes/new-project.md`: what a generated repository contains, how the agent works in it, and how it is created.
+- `recipes/repository-layout.md`, `recipes/agent-rules.md`, `recipes/autonomous-runs.md`, `recipes/new-project.md`: what a generated repository contains, what each of its rule files holds, how the agent works in it, and how it is created.
 - `recipes/dev-commands.md`: the `project` script every generated repository has (`project start:dev`, `project check`…), the same commands in every stack.
 - `recipes/vscode-extensions.md`: the VS Code extensions each generated repository installs or recommends, per stack.
 - `recipes/shared-workflows.md`: the catalog of reusable CI and deploy workflows every generated repository calls.

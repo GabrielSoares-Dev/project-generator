@@ -7,7 +7,7 @@ description: Create a Derived Project from the Template's Stack Recipes. Use whe
 
 Generates a Derived Project from the recipes in this repository. The recipes are the source of truth: this skill says **in what order** to work and **what to verify**, never how a stack is built.
 
-Read first: `recipes/new-project.md` (the flow and its guardrails), `recipes/decision-guide.md`, `recipes/repository-layout.md`, `recipes/dev-commands.md`, `recipes/quality-gates.md`, `recipes/coding-standards.md`.
+Read first: `recipes/new-project.md` (the flow and its guardrails), `recipes/decision-guide.md`, `recipes/repository-layout.md`, `recipes/agent-rules.md`, `recipes/dev-commands.md`, `recipes/quality-gates.md`, `recipes/coding-standards.md`.
 
 ## Current scope
 
@@ -39,8 +39,9 @@ The generator carries no project files (ADR-0001): every file of a generated rep
 9. **Every failure becomes a correction in the recipe or in this skill**, with the reason, in the ticket that is being worked. Never patch only the generated code: the next run would repeat the failure.
 10. **Write the project's `README.md`** as described in `recipes/dev-commands.md` (README section), starting with the requirements (Docker only; VS Code and the Dev Containers extension are optional).
 11. **Write the VS Code setup** for the chosen stack from `recipes/vscode-extensions.md`: the extensions in `.devcontainer/devcontainer.json` (backend, web frontend; the frontend also in `.vscode/extensions.json`) or `.vscode/extensions.json` (mobile), and format on save in `.vscode/settings.json` using the formatter of the lint gate.
-12. **Commit the `project` script executable** (`git update-index --chmod=+x project`) when the repository is initialised.
-13. **Prove the three ways to run it**: `./project <command>` typed on the host (it hands the command to Docker), `docker compose` directly, and the dev container. Simulate the dev container by running its image with the same mounts and user and executing `project setup` and a gate; when VS Code is available, ask the user to open the folder with *Reopen in Container* and report whether `./project setup` and `./project start:dev` worked. Only opening it in VS Code proves it.
+12. **Write the agent rules** in both repositories from `recipes/agent-rules.md`: `CLAUDE.md`, `AGENTS.md`, `CODING_STANDARDS.md`, `GLOSSARY.md`, `docs/architecture.md`, `docs/conventions.md`, `docs/adr/` (one per plan decision), `docs/agents/`, the vendored skills, `.claude/settings.json` with `.claude/hooks/guardrails.sh`, `lefthook.yml` and `.template-version`. Then prove the guardrail hook (one JSON line per rule, exit `2` for each blocked case, `0` for a feature-branch push) and the hooks (a commit with a lint error is rejected), and search both repositories for the names of the technologies not chosen (other languages, databases, clouds): only the ADRs may mention them.
+13. **Commit the `project` script executable** (`git update-index --chmod=+x project`) when the repository is initialised.
+14. **Prove the three ways to run it**: `./project <command>` typed on the host (it hands the command to Docker), `docker compose` directly, and the dev container. Simulate the dev container by running its image with the same mounts and user and executing `project setup` and a gate; when VS Code is available, ask the user to open the folder with *Reopen in Container* and report whether `./project setup` and `./project start:dev` worked. Only opening it in VS Code proves it.
 
 ## Rules
 
