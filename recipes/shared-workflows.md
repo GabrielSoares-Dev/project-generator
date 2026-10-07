@@ -4,6 +4,8 @@ What the central repository `GabrielSoares-Dev/workflows` must contain (ADR-0004
 
 ## Checks on every pull request
 
+- **`project-ci`** (implemented, used by every generated repository, `recipes/github-setup.md`): job `pr-rules` (pull request title in Conventional Commits, branch name `<type>/<ticket>-<description>`) and job `gates` (`./project setup`, then each gate of the `gates` input one at a time, then `docker build --target <prod_target>`). Inputs: `gates`, `prod_target` (default `prod`), `backend_repository`; secret `backend_read_token`. Because every stack's `project` script has the same vocabulary, one workflow serves all stacks; the per-stack `ci-*` workflows below are what this one replaces for the stacks the factory builds today.
+
 - **Common to every repository**: pull request title follows Conventional Commits; branch name matches `<type>/<ticket>-<description>`; expired feature flags warning (when the project uses flags).
 - **Backend, per stack** (`ci-java`, `ci-php`, `ci-node`, `ci-go`): install, the stack's lint and format check, typecheck, architecture validation, unit and integration tests against a real database container, **80% coverage** on `domain` + `application`, dependency audit, size and complexity limits, **build of the `Dockerfile` `prod` target**, `openapi.json` up to date with the code, and, when the repository holds `infra/` (cloud phase only), Terraform `fmt` / `validate` / TFLint plus `terraform plan`.
 - **Web frontend** (`ci-react`, `ci-angular`): install, lint (with the accessibility and raw-HTML rules), typecheck, unit and component tests with 80% coverage, bundle size, dependency audit, and the generated API client up to date with the backend's `openapi.json`.

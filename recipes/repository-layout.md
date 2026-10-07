@@ -29,9 +29,9 @@ What `/new-project` writes into every repository it creates, besides the code; w
 │   └── settings.json         agent permissions and hooks for this project
 ├── .vscode/                  extensions.json (frontend and mobile) and settings.json: the stack's VS Code extensions and format on save (recipes/vscode-extensions.md)
 ├── lefthook.yml              pre-commit and pre-push hooks calling the project script
-├── .github/workflows/        thin callers: CI and `deploy.yml` (recipes/shared-workflows.md)
+├── .github/workflows/        thin callers: `ci.yml` and `deploy.yml` (recipes/github-setup.md, recipes/vps-deploy.md)
 ├── docker-compose.prod.yml   production stack run by Portainer on the VPS (recipes/vps-deploy.md)
-├── .env.example              runtime variables with placeholders
+├── .env.example              local runtime variables with placeholders (backend: also stack.env.example, the production ones)
 └── src/, tests/, Dockerfile (`dev` and `prod` targets), docker-compose.yml, .devcontainer/ (backend and web frontend; lists the extensions), ...
 ```
 

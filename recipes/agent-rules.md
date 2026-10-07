@@ -60,7 +60,7 @@ Copied from the vendored skills' source (*Vendored skills* below), from `skills/
 
 ## Vendored skills
 
-The skills listed in `recipes/repository-layout.md` come from **`github.com/mattpocock/skills`**, at the newest commit of `main` on the day of the run, which is then pinned: clone it with `--depth 1`, record the commit, and copy each listed skill's folder (`skills/<group>/<name>/`, with its `scripts/` and other files) to `.claude/skills/<name>/`. The source is MIT-licensed: copy its `LICENSE` to `.claude/skills/LICENSE`. Check that every listed skill exists in the clone; a missing one stops the run (it was renamed or removed upstream, and the list in `recipes/repository-layout.md` must be fixed first). The clone is a temporary folder outside both repositories and is deleted afterwards.
+The skills listed in `recipes/repository-layout.md` come from **`github.com/mattpocock/skills`**, at the newest commit of `main` on the day of the run, which is then pinned: clone it with `--depth 1`, record the commit, and copy each listed skill's folder (`skills/<group>/<name>/`, with its `scripts/` and other files) to `.claude/skills/<name>/`. The source is MIT-licensed: copy its `LICENSE` to `.claude/skills/LICENSE`. Check that every listed skill exists in the clone; a missing one stops the run (it was renamed or removed upstream, and the list in `recipes/repository-layout.md` must be fixed first). The upstream files use CRLF: convert the copied files to LF (`find .claude/skills docs/agents -type f -exec sed -i 's/\r$//' {} +`), since the repository forces LF and Git otherwise warns on every file. The original `git-guardrails-claude-code/scripts/block-dangerous-git.sh` stays in the vendored folder as shipped; the script registered in `settings.json` is the adapted `.claude/hooks/guardrails.sh`. The clone is a temporary folder outside both repositories and is deleted afterwards (an explicit `rm -r <absolute path of the clone>` works; a path held in a shell variable is refused unless written `"${VAR:?}/…"`).
 
 ## `.claude/settings.json` and the guardrail hook
 
@@ -71,18 +71,18 @@ The rules of `recipes/repository-layout.md` (*Agent guardrails*) in two layers, 
    - `Bash(gh pr merge *)`;
    - `Bash(git push --force *)`, `Bash(git push -f *)`, `Bash(git push --force-with-lease *)`, `Bash(git push origin main *)`, `Bash(git push origin HEAD:main *)`;
    - `Bash(gh workflow run *)`;
-   - `Read(./.env)` and one rule per other environment file the stack creates (backend: `Read(./.env.testing)`; frontend: `Read(./.env.local)` when it exists). Never `Read(.env.*)`: it would also match `.env.example`, which the agent must read, and an allow rule cannot carve an exception out of a deny.
+   - `Read(./.env)` and one rule per other environment file the stack creates (backend: `Read(./.env.testing)`; `Read(./stack.env)` as well, the production variables a user may keep beside the repository; frontend: `Read(./.env.local)` when it exists). Never `Read(.env.*)`: it would also match `.env.example`, which the agent must read, and an allow rule cannot carve an exception out of a deny.
 2. **`hooks.PreToolUse`** with matcher `Bash`, running `"$CLAUDE_PROJECT_DIR"/.claude/hooks/guardrails.sh`. The script is the vendored `git-guardrails-claude-code` script **adapted**, because the original blocks every `git push` and an Autonomous Run must push its own branch to open a pull request. It reads the hook's JSON from standard input and matches the raw text with `grep -E`, **without `jq`** (the dev images and the cloud session may not have it), and exits with code `2` and a `BLOCKED: <reason>` line on standard error when the command:
    - pushes to `main` (`main` or `:main` as a push target), force-pushes (`--force`, `-f`, `--force-with-lease`, a `+` refspec) or deletes a remote branch (`--delete`, `:branch`);
    - merges a pull request (`gh pr merge`, `gh api` on a `/merge` path);
    - runs `terraform` with `apply`, `destroy`, `import` or `state`;
    - triggers a workflow (`gh workflow run`, `gh api` on a `/dispatches` path);
-   - reads an environment file (`.env` as a word, not followed by `.example`), whatever the program (`cat`, `less`, `grep`, `source`…);
+   - reads an environment file (`.env`, `.env.testing`, `stack.env` as a word), whatever the program (`cat`, `less`, `grep`, `source`…); the script first deletes every `.env.example` and `stack.env.example` from the text with `sed`, since a regular expression has no look-ahead;
    - runs the destructive git commands of the original (`reset --hard`, `clean -f`, `branch -D`, `checkout .`, `restore .`).
 
    Otherwise it exits `0`. It is LF, executable (`git update-index --chmod=+x`), and has no comments (`recipes/coding-standards.md`).
 
-**Prove it**: pipe a JSON line per rule into the script (`printf '%s' '{"tool_input":{"command":"git push origin main"}}' | .claude/hooks/guardrails.sh`) and check exit `2` for each blocked case, including the forms a permission rule misses (`git -C . push origin main`, `git push origin HEAD:main`, `terraform -chdir=infra destroy`, `source ./.env`), and exit `0` for `git push -u origin feature/42-add-role`, `git push origin feature/main-menu` (`main` inside a branch name), `cat .env.example`, `terraform plan`, `git status` and `./project check`. Pure `bash` and `grep -E` over the raw input pass all of these.
+**Prove it**: pipe a JSON line per rule into the script (`printf '%s' '{"tool_input":{"command":"git push origin main"}}' | .claude/hooks/guardrails.sh`) and check exit `2` for each blocked case, including the forms a permission rule misses (`git -C . push origin main`, `git push origin HEAD:main`, `terraform -chdir=infra destroy`, `source ./.env`), and exit `0` for `git push -u origin feature/42-add-role`, `git push origin feature/main-menu` (`main` inside a branch name), `cat .env.example`, `terraform plan`, `git status` and `./project check`. Pure `bash` and `grep -E` over the raw input pass all of these (run of 2026-10-07: 26 blocked cases returned `2` and 10 allowed cases returned `0`, with the script written from this description only).
 
 ## Lefthook
 
@@ -93,9 +93,9 @@ The rules of `recipes/repository-layout.md` (*Agent guardrails*) in two layers, 
 
 Lefthook is pinned like any tool: in the backend, the release binary installed in the `dev` stage of the `Dockerfile` (for the image's architecture); in the frontend, the `lefthook` package as an exact `devDependency`, which pnpm must be allowed to build (`allowBuilds` in `pnpm-workspace.yaml`). `project setup` runs `lefthook install`, so the hooks exist after the first setup in the dev container and in the cloud session (`scripts/agent-setup.sh`).
 
-**Prove it**: after `project setup`, commit a file with a lint error and check the commit is rejected, then fix it and check the commit goes through.
+**Prove it**: after `project setup`, commit a file with a lint error and check the commit is rejected, then fix it and check the commit goes through; then run the push hook (`lefthook run pre-push`; in the frontend `pnpm exec lefthook run pre-push`, since Lefthook is a project dependency there). With only Docker on the host, the commit is made inside the container (`docker compose run --rm -T app git commit -q -F - <<'EOF' … EOF`; the repository needs `user.name` and `user.email` set locally before, and the dev image `safe.directory` of item 18 in `recipes/backend/php.md` / item 21 in `recipes/frontend/react.md`). Run of 2026-10-07: both repositories rejected a broken commit (a Pint violation, an `id-denylist` error) and accepted the fixed one, and both pre-push hooks passed.
 
-Unproven: a commit made from the host terminal of a backend, where Lefthook is not installed (it lives in the container).
+**A commit made from the host terminal**, where Lefthook is not installed (it lives in the container; the frontend's `node_modules` is in a Docker volume), was observed on 2026-10-07: Git prints `Can't find lefthook in PATH` and the commit goes through **without any hook**. So the hooks protect only commits made in the container or the cloud session; CI stays the authority, and the README's *Requirements* say that committing from the host skips them.
 
 ## `.template-version`
 

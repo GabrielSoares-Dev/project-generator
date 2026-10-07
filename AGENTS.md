@@ -9,6 +9,7 @@ The Template (this repository, named **Project Generator**): a project factory t
 - `recipes/dev-commands.md`: the `project` script every generated repository has (`project start:dev`, `project check`…), the same commands in every stack.
 - `recipes/vscode-extensions.md`: the VS Code extensions each generated repository installs or recommends, per stack.
 - `recipes/vps-deploy.md`: production on a VPS (ADR-0013): the `prod` image, `docker-compose.prod.yml`, the deploy workflow (Docker Hub, Portainer webhook), what the VPS needs once.
+- `recipes/github-setup.md`: the CI caller and what `/new-project` creates on GitHub when asked (repositories, squash-only settings, branch protection, labels, Project).
 - `recipes/shared-workflows.md`: the catalog of reusable CI and deploy workflows every generated repository calls.
 
 ## Working on the Template
