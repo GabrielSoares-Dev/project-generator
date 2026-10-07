@@ -40,8 +40,8 @@ CI remains the authority: hooks can be bypassed, CI cannot.
 
 ## Deploy versions and rollback
 
-- The manual deploy workflow **tags** the deployed commit (`deploy-2026-10-02.1`) and publishes a GitHub Release whose notes are generated from the pull request titles (Conventional Commits).
-- **Rollback is the same workflow run with an earlier tag**: the code goes back, migrations do not, which is safe because every migration is backward compatible (expand, then contract).
+- The manual deploy workflow **tags** the deployed commit and the Docker Hub image (`deploy-2026-10-02.1`; the image also moves `latest`) and publishes a GitHub Release whose notes are generated from the pull request titles (Conventional Commits).
+- **Rollback is the same workflow run with an earlier tag**: it pushes that image as `latest` and calls the Portainer webhook (`recipes/vps-deploy.md`); the code goes back, migrations do not, which is safe because every migration is backward compatible (expand, then contract).
 - `GET /health` returns the version currently live.
 
 ## Dependency updates

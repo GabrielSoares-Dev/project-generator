@@ -1,5 +1,7 @@
 # Deploy Targets: serverless cloud by default, AWS or GCP via Terraform
 
+> **Amended by ADR-0013 (2026-10-06):** the first deployment of every Derived Project is a VPS (Docker Hub image, Portainer webhook). Nothing below is generated until a project moves to the cloud; then this ADR applies as written.
+
 Derived Projects start as personal projects but must be able to grow into SaaS products or client work, so the Deploy Target is chosen per Derived Project, like its stack. Both AWS and GCP are supported, each through its own recipe in the Template. The default is serverless (Cloud Run or Lambda): with little traffic the free tiers make it near-zero cost, and there is no server to patch or secure. A VPS was the original default, but it only existed because the agent was going to run there; once Autonomous Runs moved to Claude Code cloud sessions (ADR-0005), keeping a VPS just for hosting was not worth maintaining. All cloud infrastructure is defined with Terraform/OpenTofu, because an agent working unattended cannot click through consoles, and infrastructure that lives outside the repo becomes knowledge only one person holds.
 
 ## Considered Options

@@ -1,18 +1,18 @@
 # `/new-project`
 
-The skill that creates a Derived Project from the Template (ADR-0006). It runs in a session inside the Template, **locally on the user's machine and interactively**, never as an Autonomous Run in the cloud: it creates GitHub repositories, runs the Quality Gates (which need Docker and the stack's tools) and depends on the bootstrap, which only the user can apply with their own credentials. Machine requirements: Docker, Git, the `gh` CLI and the cloud CLI (AWS CLI).
+The skill that creates a Derived Project from the Template (ADR-0006). It runs in a session inside the Template, **locally on the user's machine and interactively**, never as an Autonomous Run in the cloud: it creates GitHub repositories, runs the Quality Gates (which need Docker and the stack's tools) and depends on the bootstrap, which only the user can apply with their own credentials. Machine requirements: Docker, Git and the `gh` CLI.
 
 ## Flow
 
 1. **Interview** through the Decision Guide. Inputs collected:
-   - **identity**: project name (becomes the Java package / PHP namespace and the `<project>-<environment>-<resource>` names), the domain (`app.<domain>` / `api.<domain>`), the cloud region, the monthly budget for the budget alert, and the email that receives alerts;
+   - **identity**: project name (becomes the Java package / PHP namespace and the `<project>-<environment>-<resource>` names), the domain (`app.<domain>` / `api.<domain>`), the Docker Hub user, the host ports on the VPS, the monthly budget and the alert email (recorded for the cloud phase);
    - **product**: what it does, who maintains it (team), the product language (e.g. `pt-BR`), dark mode (yes / no), Brand Tokens;
-   - **technology**: repositories (backend, web frontend, mobile), backend language and variant, frontend framework and design system, cloud, runtime model, database, authentication method, extra mechanisms, SSR / BFF need.
+   - **technology**: repositories (backend, web frontend, mobile), backend language and variant, frontend framework and design system, database, authentication method, extra mechanisms, SSR / BFF need.
 2. **Show the plan** (repositories, every choice, estimated cost) and **wait for the user's confirmation**. Nothing is created before it.
 3. **Generate the code** from the recipes, with the rule files (`recipes/repository-layout.md`), and run **every Quality Gate locally**; continue only when they pass.
 4. **Create the GitHub repositories, then protect them**: push the generated initial commit to `main` first, then enable the protection (changes only through pull requests, squash only, CI required, no direct push), since protected branches reject the first push. Also create the triage labels and a GitHub Project spanning the repositories. The frontend's initial OpenAPI client is generated from the backend's local `openapi.json`, before the backend exists on GitHub.
-5. **Bootstrap, done once by the user**, guided by `/wizard`: a small, separate Terraform in `infra/bootstrap/` that creates **only** the OIDC trust between GitHub and the cloud and the Terraform state bucket, applied with the user's own credentials.
-6. **Everything else is created only by the pipeline**: the infrastructure Terraform arrives through a pull request, and the first run of the deploy workflow creates the cloud resources. `/new-project` never runs `terraform apply`, and no cloud credentials for the project stay on the user's machine after the bootstrap.
+5. **VPS setup, done once by the user**, guided by `/wizard` (`recipes/vps-deploy.md`, *What the VPS needs, once*): the Portainer stacks with their webhooks, the reverse proxy and DNS, and the GitHub secrets `DOCKER_HUB_USERNAME`, `DOCKER_HUB_ACCESS_TOKEN` and `PORTAINER_WEBHOOK_URL`. No Terraform, bootstrap or cloud account exists in this phase (ADR-0013).
+6. **Deploys are made only by the manual `deploy.yml` workflow**, run by the human; `/new-project` and the agent never trigger it and never hold the VPS or Docker Hub credentials.
 7. Write the **ADRs** of every choice and the **README**.
 8. Hand the user the list of remaining manual steps.
 
@@ -39,8 +39,9 @@ Asked in the user's language, in three groups (identity, product, technology), a
 | Product language | `pt-BR`, `en`… | any | `<html lang>`, every text the end user sees, the Problem Details `title` and `detail`, `ErrorCode::title()`, validation messages |
 | Dark mode | yes or no | yes, no | the `.dark` token set and the color-scheme hook, or neither |
 | Brand Tokens | primary color as `#rrggbb`, corner radius (sharp, default, round), font (system stack or a named one) | all | CSS variables in `src/index.css`; the generator converts the color with `.claude/skills/new-project/tools/brand-tokens.mjs` |
-| Domain | `example.com` | free text | recorded in the README and the ADRs (`app.<domain>`, `api.<domain>`) for the deploy slice; ignored locally |
-| Cloud, region, monthly budget, alert email | AWS, a region, an amount, an email | AWS | recorded in the plan and the ADRs only; nothing is created in the cloud |
+| Domain | `example.com` | free text | the README and the ADRs (`app.<domain>`, `api.<domain>`), the repository variables to set (`HEALTH_URL`, `VITE_API_URL`); ignored locally |
+| Docker Hub user, host ports | the Docker Hub account name; a free port per repository on the VPS | free text, numbers | image names and ports in `docker-compose.prod.yml` and `deploy.yml` (`recipes/vps-deploy.md`) |
+| Monthly budget, alert email | an amount, an email | free text | recorded in the plan and the ADRs for the later cloud phase; nothing is created |
 | Repositories | backend, web frontend, mobile app | backend and web frontend | what is generated; mobile: not yet available |
 | Backend | language and variant | PHP with Laravel | Java, Node, Go: not yet available |
 | Frontend | framework and design system | React with shadcn/ui | Angular: not yet available |
@@ -50,7 +51,7 @@ Asked in the user's language, in three groups (identity, product, technology), a
 
 ## The plan and the confirmation
 
-After the interview the agent shows **the plan in the conversation**: the repositories with the folder they will be written to, the product answers, every technology choice with its reason, the Brand Tokens, what is only recorded for later (cloud, domain, budget), and what the user asked for that is not yet available. Nothing is cost-estimated yet because nothing is deployed; the plan says so. It ends with a question: confirm, change an answer, or cancel.
+After the interview the agent shows **the plan in the conversation**: the repositories with the folder they will be written to, the product answers, every technology choice with its reason, the Brand Tokens, the VPS deployment (Docker Hub user, ports, domain) and what is only recorded for later (budget, the cloud phase), and what the user asked for that is not yet available. Nothing is cost-estimated yet because nothing is deployed; the plan says so. It ends with a question: confirm, change an answer, or cancel.
 
 - **Nothing is written to disk before the user confirms**, not even the output folder. The interview and the plan live only in the conversation, so changing an answer just produces a new plan and leaves nothing behind.
 - Changing an answer after generation has started means a new output folder and a fresh run; the old folder is left for the user to delete (the environment may block a deletion, `recipes/dev-commands.md`).
@@ -60,7 +61,9 @@ After the interview the agent shows **the plan in the conversation**: the reposi
 
 `/new-project` also has an **add mode** for something new in a project that already exists, such as a mobile app next to an existing backend and web frontend. It reads the project's ADRs and `.template-version`, interviews only about what is new, generates the new repository, and opens pull requests in the existing ones for what the new repository needs (for example, the backend's Terraform). The same guardrails apply: nothing is created before the user confirms the plan, and cloud resources are still created only by the pipeline.
 
-## Terraform layout
+## Terraform layout (cloud phase, not generated today)
+
+Applies only when a project moves from the VPS to AWS or GCP (ADR-0013, ADR-0002).
 
 - **One `infra/terraform/` folder in the backend repository** holds the whole project's infrastructure: backend, frontend hosting (bucket + CDN), database, mechanisms, alerts, budget. Frontend repositories have no Terraform of their own. The bootstrap lives beside it in `infra/bootstrap/`. Exception: PHP, Node and Go projects on AWS keep their Lambda functions and API Gateway in `serverless.yml` (Serverless Framework, with Bref for PHP), linked to the Terraform through SSM parameters (ADR-0002).
 - **Community modules first**: well-maintained Terraform Registry modules (`terraform-aws-modules/*` on AWS, such as `lambda`, `apigateway-v2`, `s3-bucket`, `cloudfront`, `sqs`, `rds`; `terraform-google-modules/*` and `GoogleCloudPlatform/*` on GCP), pinned to a version and updated through Renovate like any dependency. Hand-written resources only where no suitable module exists.
@@ -71,14 +74,13 @@ After the interview the agent shows **the plan in the conversation**: the reposi
 
 Steps that need a login, a payment or personal data, generated as a `/wizard` script that opens each link and asks for each value:
 
-- create or pick the cloud account;
+- the VPS, Portainer, the stacks and their webhooks, the reverse proxy and TLS (`recipes/vps-deploy.md`);
+- create the Docker Hub account and its access token;
 - register the domain and point its DNS;
-- authenticate `gh` and the cloud CLI on the machine, once;
+- authenticate `gh` on the machine, once;
 - set up the Claude Code cloud environment (secrets and the `scripts/agent-setup.sh` setup script);
-- create the database on Neon or TiDB, when the project uses one;
 - for projects with a mobile app: the Apple Developer account (US$ 99/year) and the Google Play developer account (US$ 25 once), the app in both stores, and the store credentials EAS uses;
 - give the Claude Code cloud environment access to the new repositories (the Claude GitHub App or a token; private repositories need it), and a **read-only token** for the backend repository where a frontend or mobile app fetches `openapi.json` from a private backend (ADR-0008), stored as a secret in that repository's CI and in the cloud environment;
-- point the domain at the project: the first deploy creates the DNS zone and certificate, and a registrar outside AWS needs its name servers (or the certificate validation records) set once by hand;
-- apply the bootstrap (step 5).
+- the VPS setup of step 5.
 
 Everything else `/new-project` does by itself.

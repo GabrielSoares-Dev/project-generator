@@ -35,7 +35,7 @@ In the Template's format (`GLOSSARY.md`: a title, one sentence on the product, a
 
 ## `docs/architecture.md` and `docs/conventions.md`
 
-- **`docs/architecture.md`**: the stack recipe resolved for this project. Backend: `recipes/backend/clean-architecture.md` plus `recipes/backend/php.md`'s conventions, with only the chosen database, runtime and cloud (no "or MySQL", no "on GCP"), the folder tree with the real namespace, and the mechanisms the project uses (none yet means the section says none). Frontend: `recipes/frontend/architecture.md`, `libraries.md` and `security.md`, resolved for React.
+- **`docs/architecture.md`**: the stack recipe resolved for this project. Backend: `recipes/backend/clean-architecture.md` plus `recipes/backend/php.md`'s conventions, with only the chosen database and the VPS deployment (no "or MySQL", no "on GCP"), the folder tree with the real namespace, and the mechanisms the project uses (none yet means the section says none). Frontend: `recipes/frontend/architecture.md`, `libraries.md` and `security.md`, resolved for React.
 - **`docs/conventions.md`**: naming, API paths and responses, errors (Problem Details with `code`, ADR-0011), logs, database naming (backend), the full `project` command table (`recipes/dev-commands.md`) and the Quality Gates with the command that runs each one alone and what the Lefthook hooks run.
 
 ## `docs/adr/`
@@ -44,13 +44,13 @@ One ADR per decision of the plan, numbered from `0001`, in the Template's ADR fo
 
 | ADR | Decision |
 |---|---|
-| `0001-product-identity` | product and project name, product language, dark mode, Brand Tokens; the domain, cloud, region, monthly budget and alert email recorded for the deploy slice |
+| `0001-product-identity` | product and project name, product language, dark mode, Brand Tokens; the domain, Docker Hub user, host ports, monthly budget and alert email |
 | `0002-repositories` | which repositories exist and why (polyrepo, ADR-0006 of the Template) |
 | `0003-backend-<language>` | backend language, framework and runtime model |
 | `0004-frontend-<framework>` | frontend framework and design system, single-page app, no BFF (ADR-0007) |
 | `0005-database-<engine>` | the database engine |
 | `0006-authentication` | the method chosen, or that none is generated yet and which one the plan expects |
-| `0007-cloud-<provider>` | cloud and deploy target |
+| `0007-deploy-vps` | the VPS deploy target: Docker Hub images, Portainer webhook, host ports, the database as a container (ADR-0013 of the Template); the cloud move is recorded as a later phase |
 
 A row the user marked as "not available" still gets its ADR, saying what was wanted and what was generated instead. Later decisions continue the numbering.
 

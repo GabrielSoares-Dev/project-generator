@@ -28,8 +28,8 @@ Recipes never pin version numbers; they state this rule, applied by the agent on
 | Design system | React: shadcn/ui; Angular: spartan/ui or Angular Material; mobile: NativeWind + react-native-reusables; others only with user approval | `recipes/frontend/libraries.md` |
 | Brand Tokens | colors, typography, radii | GLOSSARY |
 | Product language | the language end users see (e.g. `pt-BR`); code stays in English | `recipes/backend/clean-architecture.md` |
-| Cloud | AWS, GCP | ADR-0002 |
-| Runtime model | container or function | ADR-0002 |
+| Deploy target | **a VPS with Docker Compose, images on Docker Hub, updated through Portainer**: always, for every project (the first phase validates ideas cheaply) | ADR-0013, `recipes/vps-deploy.md` |
+| Cloud and runtime model | AWS or GCP, container or function: **not generated today**; decided when a project proves it needs to move, then ADR-0002 applies | ADR-0002 |
 | Database | PostgreSQL, MySQL, or the cloud's native NoSQL (DynamoDB / Firestore); NoSQL ties the project to its cloud and switches list pagination from page to cursor | ADR-0002, `recipes/backend/clean-architecture.md` |
 | Authentication method | the Template's own JWT, or an external provider (Cognito, Firebase Auth, Auth0, Clerk) | ADR-0009 |
 | Extra mechanisms | queue, events (pub/sub), scheduled job, long batch, file storage, email, cache: only the ones the product needs, asked at creation ("background work? uploads? emails?") and addable later by ticket; each is a port in `application` with a cloud adapter in `infra` | `recipes/backend/java.md` (Extra mechanisms) and each language recipe |
@@ -42,7 +42,7 @@ The user answers questions about the **product**, never about technology; the ag
 
 | What the user is asked (in plain words) | Decides | Default, and when it changes |
 |---|---|---|
-| Who uses it, and how many people at once, now and in a year? (a team, hundreds, thousands, millions) | runtime model, database, cache | Few or irregular users and a small budget: **function** (serverless). Steady traffic, long requests, large uploads or live connections: **container**. Millions of simple reads and writes by key: the cloud's NoSQL becomes an option. |
+| Who uses it, and how many people at once, now and in a year? (a team, hundreds, thousands, millions) | runtime model, database, cache | Always **containers on the VPS** in this phase (ADR-0013); the answer only sizes the VPS and records what the cloud phase would need (function for few or irregular users, container for steady traffic, long requests, uploads or live connections; the cloud's NoSQL for millions of simple reads and writes by key). |
 | Where do people use it? (only the browser, also an app on the phone, only an app) | repositories | Browser only: a web frontend, built mobile-first. A native app is added only for what the browser cannot do well (camera, push notifications, working offline, store presence), as a **mobile** repository. |
 | Must pages show up in search engines, or open instantly for first-time visitors? | SSR | No: a single-page app (static files on the CDN). Yes for public pages: SSR (ADR-0007). |
 | Do people log in? Who are they, and do they already have accounts elsewhere (company login, Google)? | authentication | Email and password for one product: **the Template's own JWT** (ADR-0009). Company single sign-on, social login, multi-factor or several products sharing the same users: **an external provider** (Cognito, Firebase Auth, Auth0, Clerk). |
@@ -53,7 +53,7 @@ The user answers questions about the **product**, never about technology; the ag
 | Will several companies use the same product with their own data? | multi-tenancy | No: nothing. Yes: the multi-tenancy mechanism from the start, since adding it later touches every table. |
 | Does it talk to other companies' systems? (payment gateway, ERP, a government API) | resilience | Each outbound call gets timeouts, and retries or a circuit breaker where the recipe says so; webhooks in get idempotent consumers. |
 | Who will maintain it, and what do they already master? | backend language, frontend framework | **The team outweighs the technical fit.** Without a stronger reason, the language the maintainers know. A small API on functions: Slim, Quarkus or Node; complex domains with a strict structure: Symfony or Spring; a typical product API: Laravel, Spring Boot or Node. Go only on request, as a learning stack. React unless the team is Angular. |
-| How much can it cost per month, and how fast must it ship? | cloud, runtime | The cloud the team knows or has credits on (AWS or GCP); the smallest runtime that fits the first answer. A tight budget and low traffic point to functions and a managed database with a free tier. |
+| How much can it cost per month, and how fast must it ship? | cloud, runtime | The VPS the user already pays for (ADR-0013); the budget sizes it and is recorded for the later move to AWS or GCP. |
 
 ## Availability in the factory
 
