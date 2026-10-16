@@ -36,7 +36,7 @@ In the Template's format (`GLOSSARY.md`: a title, one sentence on the product, a
 ## `docs/architecture.md` and `docs/conventions.md`
 
 - **`docs/architecture.md`**: the stack recipe resolved for this project. Backend: `recipes/backend/clean-architecture.md` plus `recipes/backend/php.md`'s conventions, with only the chosen database and the VPS deployment (no "or MySQL", no "on GCP"), the folder tree with the real namespace, and the mechanisms the project uses (none yet means the section says none). Frontend: `recipes/frontend/architecture.md`, `libraries.md` and `security.md`, resolved for React.
-- **`docs/conventions.md`**: naming, API paths and responses, errors (Problem Details with `code`, ADR-0011), logs, database naming (backend), the full `project` command table (`recipes/dev-commands.md`) and the Quality Gates with the command that runs each one alone and what the Lefthook hooks run.
+- **`docs/conventions.md`**: naming, the method order inside a class (`recipes/coding-standards.md`), API paths and responses, errors (Problem Details with `code`, ADR-0011), logs, database naming (backend), the full `project` command table (`recipes/dev-commands.md`) and the Quality Gates with the command that runs each one alone and what the Lefthook hooks run.
 
 ## `docs/adr/`
 
