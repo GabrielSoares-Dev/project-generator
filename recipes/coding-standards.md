@@ -30,6 +30,7 @@ public class CreateRoleUseCase {
 
 - **One public method, `execute`**; everything else is `private`. (ArchUnit) This applies to **use cases only**: services, repositories, adapters, entities and other dependencies may expose as many public methods as their role needs.
 - **Private methods are declared in the order `execute` calls them**, so the class reads top to bottom as the flow it implements. (review)
+- **Method order in every class**, not only use cases: the constructor first, then the `private` methods in the order they are first called, then the public methods. A use case's only public method, `execute`, is therefore always last; a controller, repository, service or adapter declares its helpers before the public methods that use them. (review)
 - **`execute` is always the last method of the class.** (ArchUnit custom rule / review)
 - **Descriptive variable names** that state what the value means: `roleNameAlreadyExists`, `savedRole`, `permissionsToSync`, never `result`, `data`, `flag`, `temp`, `aux`, `obj` or single letters outside short lambdas. (review; Checkstyle `IllegalIdentifierName` / PHPMD naming rules / ESLint `id-denylist` for the banned names)
 
