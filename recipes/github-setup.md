@@ -23,7 +23,7 @@ jobs:
 
 The backend's `gates` are `lint typecheck arch coverage test:integration audit openapi:check`. The frontend's are `lint typecheck arch coverage audit size openapi:check`, plus `backend_repository: <owner>/<slug>-backend` under `with:` and `secrets: backend_read_token: ${{ secrets.BACKEND_READ_TOKEN }}` (`recipes/frontend/react.md`, item 15, passes `BACKEND_REPOSITORY` and `GITHUB_TOKEN` into the container). The job names the required checks refer to are `ci / pr-rules` and `ci / gates`.
 
-A **mobile app** has no Docker image, so its `ci.yml` is not a caller of `project-ci` (whose last step builds a `prod` target): it is a standalone workflow with jobs named `ci / pr-rules` and `ci / gates`, so the same branch protection applies (`recipes/mobile/expo.md`, item 19). Its gates are `lint typecheck arch coverage audit size`. It has no `deploy.yml`, no `HEALTH_URL` and no `VITE_API_URL`; the secrets are `EXPO_TOKEN` once the store workflows exist.
+A **mobile app** has no Docker image, so its `ci.yml` is not a caller of `project-ci` (whose last step builds a `prod` target): it is a standalone workflow with jobs named `ci / pr-rules` and `ci / gates`, so the same branch protection applies (`recipes/mobile/expo.md`, item 20). Its gates are `lint typecheck arch coverage audit size`. It has no `deploy.yml`, no `HEALTH_URL` and no `VITE_API_URL`; the secrets are `EXPO_TOKEN` once the store workflows exist.
 
 ## Creating the repositories
 

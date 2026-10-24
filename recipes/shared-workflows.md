@@ -9,7 +9,7 @@ What the central repository `GabrielSoares-Dev/workflows` must contain (ADR-0004
 - **Common to every repository**: pull request title follows Conventional Commits; branch name matches `<type>/<ticket>-<description>`; expired feature flags warning (when the project uses flags).
 - **Backend, per stack** (`ci-java`, `ci-php`, `ci-node`, `ci-go`): install, the stack's lint and format check, typecheck, architecture validation, unit and integration tests against a real database container, **80% coverage** on `domain` + `application`, dependency audit, size and complexity limits, **build of the `Dockerfile` `prod` target**, `openapi.json` up to date with the code, and, when the repository holds `infra/` (cloud phase only), Terraform `fmt` / `validate` / TFLint plus `terraform plan`.
 - **Web frontend** (`ci-react`, `ci-angular`): install, lint (with the accessibility and raw-HTML rules), typecheck, unit and component tests with 80% coverage, bundle size, dependency audit, and the generated API client up to date with the backend's `openapi.json`.
-- **Mobile** (`ci-expo`, not written): the web checks with the mobile tools, Maestro end-to-end on Android on every pull request, iOS on demand. Until it exists, a mobile repository carries a standalone `ci.yml` with the same job names (`recipes/mobile/expo.md`, item 19).
+- **Mobile** (`ci-expo`, not written): the web checks with the mobile tools, Maestro end-to-end on Android on every pull request, iOS on demand. Until it exists, a mobile repository carries a standalone `ci.yml` with the same job names (`recipes/mobile/expo.md`, item 20).
 
 ## Manual workflows (`workflow_dispatch`)
 
