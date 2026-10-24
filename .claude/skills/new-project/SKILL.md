@@ -14,7 +14,7 @@ Read first: `recipes/new-project.md` (the flow and its guardrails), `recipes/dec
 This skill is being built in slices (`.scratch/build-the-factory/`). Today it covers:
 
 - **Create mode**: write the repositories to a local directory, with `.github/workflows/ci.yml` and `deploy.yml` callers. **Publishing to GitHub** (step 15) happens only when the user asks and confirms. No calls to Docker Hub, Portainer or any cloud: the deployment files are generated and proven locally (`recipes/vps-deploy.md`, ADR-0013), never run. There is no Terraform in this phase.
-- **Backend: PHP Laravel + PostgreSQL** (`recipes/backend/php.md`, `recipes/backend/clean-architecture.md`) and **web frontend: React** (`recipes/frontend/react.md`). Other stacks: say they are not available yet and stop.
+- **Backend: PHP Laravel + PostgreSQL** (`recipes/backend/php.md`, `recipes/backend/clean-architecture.md`), **web frontend: React** (`recipes/frontend/react.md`) and a **standalone mobile app: Expo, with no backend** (`recipes/mobile/expo.md`; it follows its own steps, with no Docker, no VPS files and no dev container). Other stacks: say they are not available yet and stop.
 - **The interview decides everything**: no fixed answers. The inputs, what is available today and where each answer lands are in `recipes/new-project.md` (*The interview*). The deploy target is always the VPS; Docker Hub user, host ports and domain feed the deploy files, and budget and alert email are only recorded.
 
 ## Tools
@@ -26,6 +26,8 @@ The generator carries no project files (ADR-0001): every file of a generated rep
 - `tools/brand-tokens.mjs`: turns the primary color (`#rrggbb`) into the Brand Tokens in `oklch`, with the foreground and the dark-mode variants (`node brand-tokens.mjs "#4f46e5"`); it only prints, it writes nothing.
 
 ## Steps
+
+**A mobile app** (`recipes/mobile/expo.md`) follows steps 2 to 5 and 9 to 13 as written, with these differences: step 1 needs Node and pnpm on the host (Docker is used only for `actionlint`); steps 6 to 8 are the recipe's *Generating the project* and *Prove it*; there is no `docker-compose.prod.yml`, no dev container and no VPS check; step 14 does not apply (no container), and the app is opened on a device by the user.
 
 1. **Check the machine**: Docker is running (`docker info`). The host needs nothing else; PHP, Composer and the tools run in containers. This step reads, it writes nothing.
 2. **Discovery**, as in `recipes/new-project.md` (*Discovery: deciding the technologies*) and `recipes/decision-guide.md`: ask about the **product**, in plain words, never about technology, with `AskUserQuestion` in groups of at most four questions; then present one **recommendation table** (decision, recommended option, the reason tied to the user's own answers, the trade-off, and whether the factory can build it today) and let the user confirm or adjust a row. Do not turn the technology into a menu the user cannot weigh. "Not yet available" means no recipe has been proven end to end by passing every gate, not that the code cannot be written. If the product needs what the factory cannot build, say so now and offer to generate only the available part.

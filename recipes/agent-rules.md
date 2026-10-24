@@ -12,7 +12,7 @@ One line: `@AGENTS.md`. Nothing else, so every agent reads the same rules.
 
 Short and always loaded, written following `/writing-for-agents`: **at most about 60 lines**, rules and pointers only, no explanations an agent can find in `docs/`. In this order:
 
-1. **What this repository is**: one paragraph with the product name, the one-sentence description from the interview, the kind of repository (backend or web frontend) and the sibling repository's name (`<slug>-frontend` / `<slug>-backend`), and that the backend's `openapi.json` is the contract between them (ADR-0008).
+1. **What this repository is**: one paragraph with the product name, the one-sentence description from the interview, the kind of repository (backend or web frontend) and the sibling repository's name (`<slug>-frontend` / `<slug>-backend`), and that the backend's `openapi.json` is the contract between them (ADR-0008); a standalone mobile app says instead that it has no backend and that the data stays on the device.
 2. **Rules**, as short imperatives:
    - work only through pull requests; never merge, never push to `main`, never force-push; the human always merges;
    - one ticket per session and one pull request per ticket, opened with `/pr` (`recipes/autonomous-runs.md`, Pull request contents);
@@ -53,6 +53,8 @@ One ADR per decision of the plan, numbered from `0001`, in the Template's ADR fo
 | `0007-deploy-vps` | the VPS deploy target: Docker Hub images, Portainer webhook, host ports, the database as a container (ADR-0013 of the Template); the cloud move is recorded as a later phase |
 
 A row the user marked as "not available" still gets its ADR, saying what was wanted and what was generated instead. Later decisions continue the numbering.
+
+A mobile-only project (`recipes/mobile/expo.md`) keeps the same numbers where the decision exists and records the rest as decided "none": `0001-product-identity`, `0002-repositories`, `0003-backend-none`, `0004-mobile-expo` (in the frontend's place), `0005-data-on-device`, `0006-authentication`, `0007-deploy-stores`.
 
 ## `docs/agents/`
 

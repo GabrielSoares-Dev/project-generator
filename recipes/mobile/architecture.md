@@ -1,6 +1,6 @@
 # Mobile architecture
 
-The mobile app Stack Recipe (ADR-0012). Built from the user's `Boilerplate-react-native-expo`, updated to the decisions recorded here.
+The mobile app Stack Recipe (ADR-0012). Built from the user's `Boilerplate-react-native-expo`, updated to the decisions recorded here. `recipes/mobile/expo.md` is how to generate it, proven for an app with no backend.
 
 ## Platform
 

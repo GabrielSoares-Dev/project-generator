@@ -39,12 +39,12 @@ Asked in the user's language, in three groups (identity, product, technology), a
 | Product language | `pt-BR`, `en`… | any | `<html lang>`, every text the end user sees, the Problem Details `title` and `detail`, `ErrorCode::title()`, validation messages |
 | Dark mode | yes or no | yes, no | the `.dark` token set and the color-scheme hook, or neither |
 | Brand Tokens | primary color as `#rrggbb`, corner radius (sharp, default, round), font (system stack or a named one) | all | CSS variables in `src/index.css`; the generator converts the color with `.claude/skills/new-project/tools/brand-tokens.mjs` |
-| Domain | `example.com` | free text | the README and the ADRs (`app.<domain>`, `api.<domain>`), the repository variables to set (`HEALTH_URL`, `VITE_API_URL`); ignored locally |
+| Domain | `example.com` (not asked for a mobile-only project) | free text | the README and the ADRs (`app.<domain>`, `api.<domain>`), the repository variables to set (`HEALTH_URL`, `VITE_API_URL`); ignored locally |
 | Docker Hub user, host ports | the Docker Hub account name; a free port per repository on the VPS | free text, numbers | image names and ports in `docker-compose.prod.yml` and `deploy.yml` (`recipes/vps-deploy.md`) |
 | Monthly budget, alert email | an amount, an email | free text | recorded in the plan and the ADRs for the later cloud phase; nothing is created |
-| Repositories | backend, web frontend, mobile app | backend and web frontend | what is generated; mobile: not yet available |
-| Backend | language and variant | PHP with Laravel | Java, Node, Go: not yet available |
-| Frontend | framework and design system | React with shadcn/ui | Angular: not yet available |
+| Repositories | backend, web frontend, mobile app | backend, web frontend, and a standalone mobile app with no backend (`recipes/mobile/expo.md`) | what is generated; a mobile app that talks to a backend: not proven yet |
+| Backend | language and variant, or none (a mobile-only project keeps its data on the device) | PHP with Laravel; none | Java, Node, Go: not yet available |
+| Frontend | framework and design system | React with shadcn/ui; mobile: Expo with NativeWind | Angular: not yet available |
 | Database | engine | PostgreSQL | MySQL, DynamoDB, Firestore: not yet available |
 | Authentication | own JWT or an external provider | none generated yet | own JWT, Cognito, Firebase Auth, Auth0, Clerk: not yet available |
 | Extra mechanisms, SSR or BFF | queue, events, files, email, cache, SSR | none | not yet available |
