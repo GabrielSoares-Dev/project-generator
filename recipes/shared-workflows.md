@@ -17,4 +17,5 @@ What the central repository `GabrielSoares-Dev/workflows` must contain (ADR-0004
 - **Rollback**: the same workflow with `rollback_tag` set to an earlier tag: it skips the build, pushes that image as `latest` and calls the webhook (`recipes/quality-gates.md`).
 - **Cloud deploy** (later, when a project moves to the cloud, ADR-0002): assume the cloud role through OIDC → `terraform apply` → database restore point → migrations (expand-only) → deploy the application → smoke test → tag. Frontend: upload to the bucket, invalidate the CDN. Not generated today.
 - **Restore test**: restore the latest backup to a temporary database, verify it, delete it (`recipes/backend/clean-architecture.md`).
+- **`expo-eas-build`** (mobile, Expo): installs with pnpm, builds on EAS and writes the download link of the build in the run summary. Inputs: `profile` (default `development`), `platform` (default `android`); secret: `expo_token`. The app's caller `build-dev.yml` runs it by hand to produce the development APK (`recipes/mobile/expo.md`).
 - **Mobile** (when the project has an app): `release-store`, `promote-store`, `update-ota` (`recipes/mobile/architecture.md`).

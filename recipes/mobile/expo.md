@@ -7,7 +7,7 @@ A mobile app **with a backend** follows the same steps and adds what `recipes/mo
 ## What this recipe does not prove
 
 - **Nothing was run on a phone, an emulator or a simulator.** The proof is typecheck, tests, the architecture gate and `expo export`, which runs Metro and Hermes over the whole app (it catches resolution and NativeWind transform errors). A first run on a device is a manual step for the user.
-- **Maestro, EAS Build, EAS Submit and the store workflows** (`recipes/mobile/architecture.md`) are not generated: they need the user's Expo, Apple and Google accounts. The ADR of the deploy says so.
+- **Maestro, EAS Build, EAS Submit and the store workflows** (`recipes/mobile/architecture.md`) are not generated, except `expo-dev-client`, an `eas.json` with a `development` Android profile and a manual `build-dev.yml` that calls the shared workflow `expo-eas-build` (it needs the `EXPO_TOKEN` secret and `eas init` from the user): the rest needs the user's Expo, Apple and Google accounts. The ADR of the deploy says so.
 - **OCR** (reading the price from the camera) is a product decision, not a stack one: the project is generated with the camera preview and permission only.
 
 ## Generating the project
