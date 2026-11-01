@@ -4,9 +4,9 @@
 
 **Blocked by:** 01
 
-**Status:** in progress
+**Status:** done
 
-- [ ] Vendored with license and source commit: `tdd`, `code-review`, `pr`, `triage`, `handoff` (the session handoff, not the team's handoff note)
-- [ ] Own skill `handoff-note`: the single issue comment (done / left / next) every role keeps
-- [ ] Own skill `decision-summary`: the escalation summary of D1
-- [ ] Only standard `SKILL.md` frontmatter (`name`, `description`) in own skills, for portability
+- [x] Vendored with license and source commit: `tdd`, `code-review`, `pr`, `triage`, `handoff` (the session handoff, not the team's handoff note)
+- [x] Own skill `handoff-note`: the single issue comment (done / left / next) every role keeps
+- [x] Own skill `decision-summary`: the escalation summary of D1
+- [x] Only standard `SKILL.md` frontmatter (`name`, `description`) in own skills, for portability
