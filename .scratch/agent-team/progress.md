@@ -12,7 +12,7 @@ Branch: `ccr-01cfecc5-xsr2sv` of `project-generator`.
 - [x] Neutral role format (`repo/docs/role-format.md`)
 - [x] Wave 1 roles (`repo/roles/dev.md`, `qa.md`, `reviewer.md`)
 - [x] Vendored skills (`repo/skills/`, MIT, Matt Pocock) and own skills (handoff note, decision summary)
-- [ ] `agents-sync` renderer with `--check`, and its tests
+- [x] `agents-sync` renderer with `--check`, and its tests
 - [ ] Dispatcher reusable workflow and its config
 - [ ] Install instructions for a project (`agents:sync`, `agents:update`, overrides)
 
