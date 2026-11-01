@@ -1,0 +1,7 @@
+{
+  "primary": "claude",
+  "fallback": "codex",
+  "stallMinutes": 30,
+  "maxReturns": 3,
+  "supervised": true
+}

@@ -1,0 +1,46 @@
+name: agent-team dispatcher
+
+on:
+  workflow_call:
+    inputs:
+      agents-repository:
+        description: The agents repository, owner/name
+        type: string
+        required: true
+      agents-ref:
+        description: The tag of the agents repository the project pins
+        type: string
+        required: true
+      config-path:
+        description: The dispatcher config in the project
+        type: string
+        default: .agents/config.json
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: agent-team-${{ github.event.issue.number || github.event.pull_request.number || 'tick' }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: ${{ inputs.config-path }}
+          sparse-checkout-cone-mode: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.agents-repository }}
+          ref: ${{ inputs.agents-ref }}
+          path: .agent-team
+          sparse-checkout: dispatcher
+      - run: node .agent-team/dispatcher/run.js
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          AGENT_TEAM_CONFIG: ${{ inputs.config-path }}

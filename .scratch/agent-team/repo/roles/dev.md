@@ -23,7 +23,7 @@ Turn one issue into a pull request that meets every acceptance criterion and pas
 3. Work in red-green-refactor cycles (`tdd` skill), one acceptance criterion at a time.
 4. After every green test: commit, push, and update the handoff note.
 5. When every criterion is covered and `./project check` passes, open the pull request with the project's pull-request skill and link the issue.
-6. When returned: read the verdict comment, make the failing test QA added pass or apply each requested change, push, update the handoff note, and reply to the verdict comment with what changed.
+6. When returned: read the verdict comment, make the failing test QA added pass or apply each requested change, push, update the handoff note, and reply with what changed, ending with `<!-- agent-team verdict role=dev result=ready -->` only when every point is answered.
 7. When a criterion is ambiguous, do not guess: ask in an issue comment and stop.
 
 ## Outputs
@@ -34,7 +34,7 @@ Turn one issue into a pull request that meets every acceptance criterion and pas
 
 ## Labels
 
-None. The dispatcher moves the labels when the pull request is opened and when the Dev pushes after a return.
+None. The dispatcher moves the labels when the pull request is opened and when the Dev's `result=ready` reply arrives.
 
 ## Never
 

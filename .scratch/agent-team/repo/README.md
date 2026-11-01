@@ -32,9 +32,11 @@ no sign of life for 30 minutes on a pull request ─► the fallback AI takes ov
 | `roles/` | One neutral document per role (`docs/role-format.md`) |
 | `skills/` | Skills the roles call, in the standard `SKILL.md` format: vendored ones under their license, and the team's own |
 | `bin/agents-sync` | Renders roles and skills into a project, and checks for drift |
-| `dispatcher/` | The reusable workflow that moves work between roles (not written yet) |
+| `dispatcher/` | The dispatcher: `decide.js` (the rules, no I/O), `run.js` (GitHub calls), and its setup (`dispatcher/README.md`) |
+| `.github/workflows/dispatcher.yml` | The reusable workflow projects call |
+| `examples/` | The project's caller workflow and config |
 | `docs/adr/` | The decisions of this repository |
-| `tests/` | Tests of `bin/agents-sync` |
+| `tests/` | `tests/run.sh` runs every test |
 
 ## Installing in a project
 

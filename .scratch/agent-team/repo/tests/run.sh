@@ -184,6 +184,13 @@ t_removed_role_is_cleaned_up
 t_invalid_role_fails
 t_triple_quote_fails
 
+if node --test "$REPO"/dispatcher/*.test.js > "$WORK/node" 2>&1; then
+  pass "dispatcher rules ($(grep -c '^ok ' "$WORK/node") tests)"
+else
+  cat "$WORK/node"
+  failed "dispatcher rules"
+fi
+
 echo
 echo "$PASSED passed, $FAILED failed"
 [ "$FAILED" -eq 0 ]
