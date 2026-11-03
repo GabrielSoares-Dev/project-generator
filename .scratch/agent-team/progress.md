@@ -15,7 +15,7 @@ Branch: `ccr-01cfecc5-xsr2sv` of `project-generator`.
 - [x] `agents-sync` renderer with `--check`, and its tests
 - [x] Dispatcher reusable workflow and its config (`repo/dispatcher/`, 22 rule tests)
 - [x] Install instructions for a project (`repo/README.md`, `repo/dispatcher/README.md`)
-- [ ] Ticket 06, Template side (recipes, `/new-project`, `./project agents:*`): waits for the repository's name and first tag
+- [x] Ticket 06, Template side: recipes, `/new-project`, `project agents:*`, ADR-0014 (agent-team v0.1.1)
 
 ## Open for the user
 

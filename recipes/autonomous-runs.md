@@ -53,3 +53,7 @@ The agent never guesses. When a ticket is ambiguous or it gets stuck, it comment
 ## Whole specs
 
 Matt Pocock's `/implement-spec` remains available when the human prefers one integration-branch pull request for a whole spec.
+
+## The agent team
+
+Besides these prompts, each repository carries the agent team (ADR-0014, `recipes/agent-rules.md`): roles that take a ticket from an idea to the human's merge through labels, started by Claude Code scheduled tasks and moved between roles by agent-team's deterministic dispatcher (`.github/workflows/agent-team.yml`). The human applies `needs-spec` to an idea (the PM shapes the ticket with the Architect and the Designer) or `ready-for-agent` to a ticket (the Dev, QA and the Reviewer take it to `ready-for-human`). Both ways keep the rules above: one ticket per pull request, tests first, `project check` green, never guess, the human merges. The first tickets run in supervised mode (`"supervised": true` in `.agents/config.json`): the dispatcher asks for the human's `/ok` before every hand-off.
