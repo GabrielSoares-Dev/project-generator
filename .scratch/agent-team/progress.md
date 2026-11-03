@@ -1,6 +1,6 @@
 # Progress
 
-Resume pointer for any session (or a scheduled resume) that picks this work up. The agents repository is drafted in `repo/` here until the user creates it on GitHub; then the folder is copied there and removed from the Template.
+Resume pointer for any session that picks this work up. The agents repository now lives at https://github.com/GabrielSoares-Dev/agent-team (pull requests #2 merged, #3–#9 open); `repo/` here is the outdated first draft.
 
 Branch: `ccr-01cfecc5-xsr2sv` of `project-generator`.
 
@@ -19,7 +19,6 @@ Branch: `ccr-01cfecc5-xsr2sv` of `project-generator`.
 
 ## Open for the user
 
-- Name of the agents repository on GitHub.
 - E2a–E2e (cloud generation), only needed at the New Project screen.
 - Verdicts as marked comments instead of GitHub reviews (ticket 02).
 - The Reviewer's Claude tools: strict, or with Bash or subagents (ticket 03).
