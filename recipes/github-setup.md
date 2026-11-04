@@ -32,6 +32,8 @@ Each repository also has the agent team's two callers, from agent-team's `exampl
 
 `project agents:update` moves both to a new tag with the config.
 
+**The agent-team repository must be public** (found by the Ensemble run, 2026-11-04): the callers use its reusable workflows, which GitHub refuses to start from another repository while it is private (each run fails at once with no job, so the required `paths / paths` never appears), and the dispatcher checks agent-team out with the calling repository's `GITHUB_TOKEN`, which cannot read a private repository. Check it before publishing: `gh repo view GabrielSoares-Dev/agent-team --json visibility`.
+
 ## Creating the repositories
 
 1. Ask for the owner (the user's account or an organization) and the visibility (private by default).
