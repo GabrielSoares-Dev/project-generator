@@ -1,6 +1,6 @@
 # Agent Team: AI-agnostic development agents and the platform to lead them
 
-Status: grilling done for the agents (Wave 1) and the platform's place in the plan; the cloud generation mode (E2a–E2e) is still open.
+Status: built. The agent team lives in https://github.com/GabrielSoares-Dev/agent-team (v0.2.0: Waves 1, 2 and 3); the Template installs it (ADR-0014). The cloud generation mode (E2a–E2e) is still open. Decisions taken after the first grilling are under *Later decisions*; where they differ from the tables, they win.
 
 ## Problem
 
@@ -85,3 +85,15 @@ Derived Projects already run one agent: the Autonomous Run (`Implement issue #N`
 - Per-run cost may not be visible on subscription billing.
 - Live events on the platform need the cloud environments' network to reach it.
 - ADR-0005 says Matt Pocock's skills are vendored into the Template, but only `new-project` is there; the agents repository vendors them instead.
+
+## Later decisions
+
+| Id | Decision |
+|---|---|
+| — | **Claude only for now** (agent-team ADR-0007): no Codex failover; supersedes A1.2, A1.2a, A1.2c, A1.3c and A1.3d. A silent role is restarted once; a second stall escalates with `stalled`. Codex files are still rendered. |
+| — | The Dev is split per repository kind, `dev-backend` and `dev-frontend`, each carrying the Template's standards (agent-team ADR-0005). |
+| — | agent-team vendors every skill and `docs/agents/` (agent-team ADR-0006); the Template stops cloning mattpocock/skills (ADR-0014). |
+| P1–P3, R1–R4, G1 | Wave 2: the PM interviews the human on the issue (the platform's chat writes the comments; each message starts the PM through its scheduled task's API trigger, or `run:pm` without the platform) and writes the final ticket; the Architect plans, and for a complex feature writes an architecture plan with Mermaid diagrams the human approves by merging; separate services only for a written reason; the Designer specifies the screen. |
+| W1–W4 | Wave 3: the Release never deploys, it keeps the `release-notes` issue and reports the `DEPLOY` result; no Maintenance agent (a Renovate PR whose CI fails asks `/ok` for the Dev); the Production Monitor waits for the cloud phase, an uptime check opens `production-down`; the Coach proposes one rule per pull request, weekly, in the project, agent-team or the Template. |
+| — | Agent commits carry `Agent-Role: <role>`; the `agent-paths` check keeps QA in the tests, the Architect in `docs/design/` and `docs/adr/`, the Coach in rule files, and read-only and tracker roles out of commits. |
+

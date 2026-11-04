@@ -1,6 +1,6 @@
 # Progress
 
-Resume pointer for any session that picks this work up. The agents repository now lives at https://github.com/GabrielSoares-Dev/agent-team (pull requests #2 merged, #3–#9 open); `repo/` here is the outdated first draft.
+Resume pointer for any session that picks this work up. The agents repository lives at https://github.com/GabrielSoares-Dev/agent-team (v0.2.0 published; #33 open for v0.2.1); the first draft that lived in `repo/` here was removed.
 
 Branch: `ccr-01cfecc5-xsr2sv` of `project-generator`.
 
@@ -24,7 +24,7 @@ Branch: `ccr-01cfecc5-xsr2sv` of `project-generator`.
 - The Reviewer's Claude tools: strict, or with Bash or subagents (ticket 03).
 - The dispatcher's design choices listed in ticket 05.
 
-## Wave 3 (pull requests open)
+## Wave 3 (merged, v0.2.0)
 
 Decisions: W1 (a) Release never deploys; it keeps the "next release" checklist (an issue labelled `release-notes`) and reacts to the DEPLOY workflow's result; W1a after every merge and after DEPLOY completes; W2 (a) no Maintenance agent: a Renovate PR whose CI fails gets a dispatcher comment asking `/ok` to start the Dev (even with supervision off); majors stay human tickets; W3 (a) Monitor deferred to the cloud phase; a deterministic uptime workflow checks `HEALTH_URL` every 15 minutes, twice a minute apart, and opens, updates or closes one `production-down` issue; W4 Coach weekly, only if a ticket had returns, escalations or stalls; one rule per pull request, in the project (`AGENTS.md`, `agents/overrides/**`, `docs/adr/**`), agent-team (`roles/**`, own skills) or the Template (`recipes/**`).
 
