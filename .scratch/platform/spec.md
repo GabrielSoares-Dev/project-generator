@@ -37,7 +37,7 @@ Q1 for the user only; Q3 GitHub is the state of the work, the platform keeps onl
 
 | Id | Decision |
 |---|---|
-| — | The New Project's Team step lists every role with a **model select** (Opus, Sonnet, Haiku), preset from agent-team's role defaults (PM, Architect and Designer on Opus; the Devs, QA, Reviewer and Coach on Sonnet; Release on Haiku). What the user changes becomes `"models"` in the project's `.agents/config.json`, so the setup checklist shows it. The model that runs is the scheduled task's on claude.ai, which the user sets; the platform never claims to change it. |
+| — | The New Project's Team step lists every role with a **model select** (Opus, Sonnet, Haiku), preset from agent-team's role defaults (PM, Architect and Designer on Opus; the Devs, QA, Reviewer and Coach on Sonnet; Release on Haiku). What the user changes becomes `"models"` in the project's `.agents/config.json`, so the setup checklist shows it. After creation, each role card of the control room has the same select: a change opens a pull request on the project changing `"models"` in `.agents/config.json`, and the card says the scheduled task must be changed too until the user marks it done. The model that runs is the scheduled task's on claude.ai, which the user sets; the platform never claims to change it. |
 
 ## Buttons (design board 8)
 
