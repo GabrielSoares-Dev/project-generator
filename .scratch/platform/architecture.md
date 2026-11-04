@@ -110,7 +110,7 @@ sequenceDiagram
   G->>A: POST /v1/webhooks/github (X-Hub-Signature-256, X-GitHub-Delivery)
   A->>A: verify HMAC
   A->>P: tx: insert event (uq delivery id), update projection, create notification
-  A->>P: NOTIFY squad_events, seq
+  A->>P: NOTIFY ensemble_events, seq
   A-->>G: 204
   D->>A: POST /v1/dispatcher-events (Bearer repo token)
   A->>P: insert event (uq body hash), projection, NOTIFY
