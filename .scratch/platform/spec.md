@@ -27,6 +27,12 @@ Q1 for the user only; Q3 GitHub is the state of the work, the platform keeps onl
 | A5 | Repositories: backend and web frontend now; the mobile app later through `/new-project`'s add mode. |
 | A6 | On the VPS (ADR-0013) with a public domain, since GitHub and the dispatcher post to it. |
 
+## The current project
+
+| Id | Decision |
+|---|---|
+| — | A **project selector at the top of the side menu** on every web screen (a chip on top of the phone screens) always says which project the user is in. **Project screens** (control room, PM chat, a ticket) show one project, and switching the selector switches the whole screen. **Cross-project screens** (Decisions, the team wall, Metrics) default to **"All projects"**, show the project on every card, and use the selector as a filter. **New Project** shows the draft being created ("Creating now"). |
+
 ## Buttons (design board 8)
 
 | Id | Decision |
