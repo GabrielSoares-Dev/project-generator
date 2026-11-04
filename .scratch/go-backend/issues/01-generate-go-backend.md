@@ -11,7 +11,7 @@
 - [x] Each gate proven failing once (a lint error, a forbidden import, coverage below 80%, a stale `openapi.json`)
 - [x] `prod` image: distroless, non-root, migrates at start, answers `GET /health`, health check healthy, size measured
 - [x] `.claude/skills/new-project/SKILL.md`, `recipes/new-project.md`, `recipes/quality-gates.md`, `recipes/coding-standards.md`, `recipes/agent-rules.md`, `recipes/vps-deploy.md` name Go where they name PHP
-- [ ] agent-team's Dev backend carries the Go standards (separate pull request in agent-team)
+- [x] agent-team's Dev backend carries the Go standards (agent-team#36)
 
 ## Decisions taken in the run (to confirm in review)
 
