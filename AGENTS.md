@@ -15,6 +15,7 @@ The Template (this repository, named **Project Generator**): a project factory t
 ## Working on the Template
 
 - **The generator changes with what it generates.** Whenever a change to a generated project affects how projects are generated (a fix, a new file, a different command, a user preference), apply it to the generator in the same step: the recipes and the `/new-project` skill. A generated project that passes while the generator still produces the old version is a bug, and the next run would repeat the failure.
+- **A stack recipe goes with the agent team.** A new Stack Recipe, or a change to how a stack meets the rules (tools, folders, types, tests, gates), goes with a pull request in agent-team (`github.com/GabrielSoares-Dev/agent-team`) updating the per-stack table of the Dev role of that kind (`roles/dev-backend.md` or `roles/dev-frontend.md`). The Template's ticket is done only when it links that pull request; agent-team's Coach runs a weekly stack check that catches a gap.
 - **The Template holds no project files** (ADR-0001): recipes describe every file precisely enough to write it, and the skill keeps only its own tools (`.claude/skills/new-project/tools/`). Do not copy a generated project's files into the Template.
 
 ## Language
