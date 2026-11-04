@@ -75,3 +75,17 @@ Open, for the dispatcher: what **Pause this ticket** and **Abandon** do on GitHu
 ## Screens added to the canvas
 
 New Project steps 3–6 (Stack, Repositories, Team, Generate), the team wall (TV), Decisions on the phone, Metrics (from the events; no money cost), the button flows, and the design system board (colors, the six agent states as semantic variants, type including the TV scale, spacing, radii, components).
+
+## Stack (architecture plan, `architecture.md`)
+
+| Id | Decision |
+|---|---|
+| D1 | **Go** (the learning stack of `recipes/backend/go.md`, on the user's explicit request): `net/http` + Huma, sqlc + goose on PostgreSQL, `pgx`. Before the platform, `/new-project` must generate Go and pass its Quality Gates, and agent-team's Dev backend must carry the Go standards and the learning-stack rules (explanatory pull requests, stricter lint, `go test -race`). The architecture plan's Laravel specifics are replaced by their Go equivalents. |
+| D2 | Live updates: PostgreSQL `LISTEN/NOTIFY` with replay from the event log, falling back to polling when a wait times out. |
+| D3 | The GitHub App as the login provider, recorded as an ADR in both repositories. |
+| D4 | The platform's automatic writes (the quota probe) use the user's token, through the same locked refresh. |
+| D5 | Display and events tokens are hashed, not encrypted. |
+| D6 | Rate limit in memory (`golang.org/x/time/rate`) while the API has one replica; an ADR says a second replica brings a shared store. |
+| D7 | pt-BR only, no i18n. |
+| D8 | Every timed job (reconciliation, quota probe, daily digest, pruning) in the one scheduler binary and container (A4), each guarded against overlapping runs. |
+| D9 | **No queue or broker.** The API, the scheduler and PostgreSQL. Webhooks and dispatcher events are stored and projected inside the request, idempotent; PostgreSQL's `LISTEN/NOTIFY` is the only bus between the API and the scheduler; the reconciliation repairs anything missed. A queue comes only when processing a delivery needs slow outbound calls or the API runs more than one replica, with an ADR. |
