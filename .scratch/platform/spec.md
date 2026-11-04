@@ -80,7 +80,7 @@ New Project steps 3–6 (Stack, Repositories, Team, Generate), the team wall (TV
 
 | Id | Decision |
 |---|---|
-| D1 | **Go** (the learning stack of `recipes/backend/go.md`, on the user's explicit request): `net/http` + Huma, sqlc + goose on PostgreSQL, `pgx`. Before the platform, `/new-project` must generate Go and pass its Quality Gates, and agent-team's Dev backend must carry the Go standards and the learning-stack rules (explanatory pull requests, stricter lint, `go test -race`). The architecture plan's Laravel specifics are replaced by their Go equivalents. |
+| D1 | **Go** (the learning stack of `recipes/backend/go.md`, on the user's explicit request): `net/http` + Huma, sqlc + goose on PostgreSQL, `pgx`. Before the platform, `/new-project` must generate Go and pass its Quality Gates, and agent-team's Dev backend must carry the Go standards and the learning-stack rules (explanatory pull requests, stricter lint, `go test -race`). The architecture plan was rewritten for Go on 2026-11-04 (stack, components, SSE hub, scheduler process, risks). |
 | D2 | Live updates: PostgreSQL `LISTEN/NOTIFY` with replay from the event log, falling back to polling when a wait times out. |
 | D3 | The GitHub App as the login provider, recorded as an ADR in both repositories. |
 | D4 | The platform's automatic writes (the quota probe) use the user's token, through the same locked refresh. |

@@ -4,27 +4,27 @@ Status: proposal for the human. Built on `.scratch/platform/spec.md` (its decisi
 
 ## 0. Stack
 
-### What the factory can generate today
+### What the factory can generate
 
-`recipes/new-project.md` (the interview table, lines 45–50) says what `/new-project` builds today: **backend PHP with Laravel**, **frontend React with shadcn/ui**, **PostgreSQL**, and **no authentication and no extra mechanisms** ("none generated yet"). Java, Node and Go are "not yet available". Everything Squad needs beyond the bare skeleton (GitHub login, SSE, the scheduler container, encryption) is therefore **built by tickets in the project**, not by the generator.
+`/new-project` generates a **Go** backend (`recipes/backend/go.md`, the learning stack, chosen by the user in D1 and proven by the Go run of `.scratch/go-backend/`), a **React** frontend with shadcn/ui and **PostgreSQL**, with **no authentication and no extra mechanisms**. Everything Squad needs beyond the skeleton (GitHub login, SSE, the scheduler process, encryption) is **built by tickets in the project**, not by the generator.
 
-### Backend: PHP 8 + Laravel (`recipes/backend/php.md`), one backend organised in modules
+### Backend: Go (`recipes/backend/go.md`), one backend organised in modules
 
 | Concern | Choice | Why (source) |
 |---|---|---|
-| Language / framework | **Laravel**, Lean Laravel, clean architecture `src/Domain`, `src/Application`, `src/Infra` | The only backend the factory can generate (`new-project.md`:46); the user masters it (SpeakBigO backend); "Laravel: the default for HTTP APIs" (`php.md`, Variants). The technical cost is SSE, handled below. Node is the alternative (decision D1). |
-| Runtime | **FrankenPHP** classic mode, `prod` target, on the VPS | `php.md` *Runtime* and item 20; `vps-deploy.md`; ADR-0013. Octane not needed at this scale. |
+| Language / framework | **Go** with `net/http` + **Huma**, clean architecture in `internal/domain`, `internal/application`, `internal/infra` | D1: the user asked for Go, the learning stack (`go.md`, Status): explanatory pull requests (`## Go notes`), stricter gates. Goroutines make SSE cheap. |
+| Runtime | **One binary**, distroless `prod` image (24.8 MB measured), on the VPS | `go.md` items 3 and 4; `vps-deploy.md`; ADR-0013. |
 | Database | **PostgreSQL** (container, named volume, scheduled dump) | Records with relations and reports across them (metrics, timeline): `decision-guide.md`, database row; ADR-0013. `jsonb` holds raw event payloads; `LISTEN/NOTIFY` wakes the SSE streams. |
-| ORM / migrations | **Eloquent only in `Infra/Models`**, Laravel migrations, run by the `app` entrypoint | `php.md` Libraries; `vps-deploy.md` *Migrations* (on the VPS the entrypoint migrates; `clean-architecture.md`'s "never on startup" is the cloud rule). The scheduler container must **not** migrate (risk R6). |
-| API contract | **Scramble** → committed `openapi.json`; frontend generates with orval | ADR-0008; `php.md` Libraries. |
-| Auth | **GitHub App OAuth (user-to-server) run server-side**, then the Template's own session: two `httpOnly` JWT cookies (`lcobucci/jwt`, access 15 min, rotating refresh 7 days stored hashed) plus `logged_in=1` | Settled by A2 and the Login table; ADR-0009 (backend owns login, provider is an adapter behind `AuthServiceInterface`). GitHub is not in the decision guide's provider list (Cognito, Firebase, Auth0, Clerk), so it gets a platform ADR. The GitHub OAuth calls are two HTTP endpoints done with the Laravel HTTP client (no Socialite, which the recipes do not list). |
-| GitHub API | Laravel HTTP client behind ports; **App JWT** (RS256, `lcobucci/jwt`) → installation tokens for reads; **the user's token for every write** | A1: writes as the user. Reads with the installation token do not depend on a live session (the scheduler reconciles while nobody is signed in). Timeouts on every call, retry ×3 with jitter only on 429/503/timeouts of **safe** calls (`clean-architecture.md`, Resilience). |
-| Live updates | **SSE** with Laravel `StreamedResponse`; each stream `LISTEN`s on PostgreSQL and replays from the event log by sequence (`Last-Event-ID`); streams close after 5 min and the browser reconnects | `decision-guide.md`: "SSE first, WebSocket when the client must send as well" (T3). PHP is shared-nothing (`php.md` Libraries), so there is no in-process hub: PostgreSQL is the bus between `app` and `scheduler`, with no new container. One thread per open stream is fine for one user (≈5–10 streams). Decision D2 for the mechanism. |
-| Scheduler | **`php artisan schedule:work`** in its own `scheduler` container (one replica, same image, another command) | A4, an explicit exception to "in-process schedulers are forbidden" (`clean-architecture.md`, Extra mechanisms; `php.md` Mechanisms), recorded as a platform ADR. Jobs are artisan commands calling use cases. |
-| Queue | **None.** Webhooks and dispatcher events are processed in the request; reconciliation repairs what is missed | A4 ("processed at once"); a queue would be a new mechanism with no need at this volume (`decision-guide.md`, Extra mechanisms: only what the product needs). |
-| Encryption at rest | `EncryptionServiceInterface` in `Application`, adapter on Laravel's `Encrypter` (AES-256-GCM) with its own key `SECRETS_ENCRYPTION_KEY` and previous keys for rotation, in the Portainer stack env | A3; `clean-architecture.md` names the encryption service port; ADR-0013 (runtime secrets in the stack's environment). Display and events tokens are **hashed** (SHA-256), not encrypted: they are only compared, never read back (D5). |
-| Rate limit | Laravel RateLimiter on the pairing, login and client-errors routes | `php.md` says Redis counters from the start; with one `app` replica the file store suffices (D6). |
-| Tests | PHPUnit + Mockery, integration against real PostgreSQL in a container; GitHub, routine trigger and clock mocked at their ports; recorded GitHub payloads in `tests/fixtures` | ADR-0003; `clean-architecture.md` Testing rules; `php.md` Tests. |
+| Data access / migrations | **sqlc + goose** on `pgx`: plain SQL queries, typed code generated into `internal/infra/database/sqlc`, migrations embedded and applied by `serve` at start | `go.md` *Choices* and item 10; `vps-deploy.md` *Migrations*. The scheduler process runs `scheduler`, which **never** migrates (risk R6). |
+| API contract | **Huma** generates the OpenAPI 3.1 → committed `openapi.json`, checked by `openapi:check`; frontend generates with orval | ADR-0008; `go.md` items 6 and 13. |
+| Auth | **GitHub App OAuth (user-to-server) run server-side**, then the Template's own session: two `httpOnly` JWT cookies (`golang-jwt/jwt`, access 15 min, rotating refresh 7 days stored hashed) plus `logged_in=1` | Settled by A2 and the Login table; ADR-0009 (backend owns login, provider is an adapter behind `AuthServiceInterface`). GitHub is not in the decision guide's provider list (Cognito, Firebase, Auth0, Clerk), so it gets a platform ADR (D3). The OAuth calls are two HTTP requests with `net/http`. |
+| GitHub API | **`google/go-github`** behind ports, on `net/http` clients with explicit timeouts; **App JWT** (RS256, `golang-jwt/jwt`) → installation tokens for reads; **the user's token for every write** | A1: writes as the user. Reads with the installation token do not depend on a live session (the scheduler reconciles while nobody is signed in). Retry ×3 with jitter (`cenkalti/backoff`) only on 429/503/timeouts of **safe** calls (`clean-architecture.md`, Resilience). |
+| Live updates | **SSE** with a `net/http` handler that flushes (`http.Flusher`) one goroutine per stream; one **hub** goroutine per process holds a dedicated `pgx` connection `LISTEN`ing on PostgreSQL and fans out to the streams, which replay from the event log by sequence (`Last-Event-ID`); streams close after 5 min and the browser reconnects | `decision-guide.md`: "SSE first, WebSocket when the client must send as well" (T3). D2. The hub is in memory per process; PostgreSQL stays the bus between `app` and `scheduler`, with no new container. |
+| Scheduler | **`/app/server scheduler`** in its own `scheduler` container (one replica, same image, another command): `time.Ticker` loops calling use cases, each run inside `pg_try_advisory_lock` so two never overlap | A4, an explicit exception to "in-process schedulers are forbidden" (`clean-architecture.md`, Extra mechanisms; `go.md` Mechanisms), recorded as a platform ADR. D8. |
+| Queue | **None.** Webhooks and dispatcher events are processed in the request; reconciliation repairs what is missed | A4 and D9. |
+| Encryption at rest | `EncryptionServiceInterface` in `application`, adapter on the standard library's **AES-256-GCM** (`crypto/aes`, `crypto/cipher`) with its own key `SECRETS_ENCRYPTION_KEY` and previous keys for rotation (key id in each ciphertext), in the Portainer stack env | A3; `clean-architecture.md` names the encryption service port; ADR-0013. Display and events tokens are **hashed** (SHA-256), not encrypted (D5). |
+| Rate limit | `golang.org/x/time/rate` limiters in memory, per key, on the pairing, login and client-errors routes | `go.md` Libraries; one `app` replica (D6). |
+| Tests | `testing` + testify, mockery mocks of the ports, integration against the Compose PostgreSQL (`app_test`); GitHub, routine trigger and clock mocked at their ports; recorded GitHub payloads in `tests/fixtures`; always `-race` | ADR-0003; `clean-architecture.md` Testing rules; `go.md` item 12. |
 
 ### Frontend: React SPA (`recipes/frontend/react.md`, `libraries.md`, `architecture.md`, `security.md`)
 
@@ -58,8 +58,8 @@ flowchart LR
   end
 
   subgraph VPS["VPS (ADR-0013), reverse proxy with TLS"]
-    APP[app container<br/>Laravel on FrankenPHP<br/>HTTP API + SSE]
-    SCH[scheduler container<br/>same image<br/>artisan schedule:work]
+    APP[app container<br/>Go binary: serve<br/>HTTP API + SSE]
+    SCH[scheduler container<br/>same image<br/>server scheduler]
     DB[(PostgreSQL<br/>event log, projection,<br/>registry, secrets)]
     NGX[frontend container<br/>nginx-unprivileged]
   end
@@ -149,7 +149,7 @@ sequenceDiagram
 | Mechanism | Used for | Allowed by |
 |---|---|---|
 | PostgreSQL | everything stored (A3) | decision guide, Database; ADR-0013 |
-| SSE (`StreamedResponse`) | live screens and TV (T3) | decision guide, realtime "SSE first" |
+| SSE (`net/http` + `http.Flusher`, a `LISTEN` hub per process) | live screens and TV (T3) | decision guide, realtime "SSE first" |
 | PostgreSQL `LISTEN/NOTIFY` as the events adapter | wake streams on writes from `app` and `scheduler` | decision guide lists events (pub/sub) as a port + adapter; this adapter is not named in any recipe: **D2** |
 | Scheduler container (`schedule:work`) | reconciliation every 15 min (A4), quota probe every 30 min (M4), daily digest (F5), pruning expired pairings | **exception** to `clean-architecture.md` Extra mechanisms, settled by A4; platform ADR |
 | GitHub App (webhooks, OAuth, App JWT) | A1, A2 | spec A1/A2; third-party API behind ports (`GitHubIssuesServiceInterface`, `GitHubOAuthServiceInterface`) with timeouts and safe retries |
@@ -359,8 +359,8 @@ Later slices follow the same shape: `GET /v1/tickets/{id}` (M1), `GET /v1/notifi
 
 | # | Risk | Mitigation |
 |---|---|---|
-| R1 | SSE behind the reverse proxy is buffered or cut | `X-Accel-Buffering: no`, 15 s pings, proxy read timeout above 5 min, `max_execution_time` 0 only on stream routes; streams end every 5 min and resume by `Last-Event-ID`, so a cut loses nothing. |
-| R2 | PHP holds one thread and one DB connection per open stream | ≈5–10 streams for one user; FrankenPHP `num_threads` and PostgreSQL `max_connections` sized for 3× that; the 5-minute recycle bounds leaks. If it ever matters: Node (D1) or Mercure. |
+| R1 | SSE behind the reverse proxy is buffered or cut | `X-Accel-Buffering: no`, 15 s pings, proxy read timeout above 5 min, the server's `WriteTimeout` off only on stream routes (`http.ResponseController`); streams end every 5 min and resume by `Last-Event-ID`, so a cut loses nothing. |
+| R2 | A stream goroutine leaks after the browser leaves | Every stream ends on `request.Context().Done()`, on the 5-minute recycle and on a failed write; the hub drops a subscriber whose buffer is full; one `LISTEN` connection per process, not per stream. A test opens and closes streams and checks the hub's subscriber count. |
 | R3 | GitHub refresh tokens are single-use; `app` requests and the `scheduler` refreshing at once would revoke the pair | Refresh only inside a `SELECT … FOR UPDATE` on `github_credentials`; the scheduler reads with installation tokens and only writes (probe) through the same locked path. |
 | R4 | Missed webhooks or dispatcher POSTs (VPS down, 5 s dispatcher timeout) | Reconciliation every 15 min writes correcting events; `projection:rebuild` for disasters; Health shows the last webhook, event and reconciliation per repository (M3). |
 | R5 | `/fire` request shape and limits are not in any file read; tasks run at most 30 times an hour (`dispatcher/README.md`) | First PM-chat ticket starts by confirming the API with the user; no automatic retry; the error tells the user. The dispatcher may also start the PM on the same human comment (its `needs-spec` rule): a duplicate start to raise with agent-team. |
@@ -402,14 +402,14 @@ Frontend (`squad-frontend`):
 
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
-| D1 | Backend language | (a) **Laravel**, available in the factory today, user masters it; SSE costs a thread per stream. (b) **Node + Fastify** (`node.md`), the best technical fit (SSE, Octokit, Zod shared with the frontend, the dispatcher is JS), but "not yet available" (`new-project.md`:46): the generator must first build and prove the Node recipe end to end. | **(a) Laravel.** At one user's scale the SSE cost is negligible, and the agents' debut (Q7) should not also be the Node generator's debut. Revisit if R2 bites. |
+| D1 | Backend language | Decided: **Go** (the user's choice; `spec.md`, D1). Laravel was the earlier recommendation, while the factory could not generate Go. | — |
 | D2 | Bus between `app`, `scheduler` and the SSE streams | (a) **PostgreSQL `LISTEN/NOTIFY`** + replay by `seq`. (b) Each stream polls `events` every 2 s. (c) Redis pub/sub (new container). | **(a)**, with (b) as its fallback when a wait times out; no new container. |
 | D3 | GitHub App as the login provider (ADR-0009 lists Cognito, Firebase Auth, Auth0, Clerk) | Settled in spirit by A2; needs the ADR | Record it as an ADR in both repositories. |
 | D4 | Who acts for automated platform writes (the M4 probe release) | (a) the user's token, like every write (A1). (b) the App's installation token. | **(a)**, through the locked refresh path, so every change on GitHub keeps one author. |
 | D5 | Display and events tokens: hashed instead of A3's "encrypted" | (a) SHA-256 hash (never read back). (b) encrypt as written in A3. | **(a)**: strictly safer; the `/fire` URL and token and the GitHub tokens stay encrypted because they are read back. |
-| D6 | Rate-limit store (`php.md`: Redis from the start) | (a) Laravel file cache store, valid while `app` has one replica. (b) Redis container. | **(a)**, with an ADR stating that a second replica brings Redis. |
+| D6 | Rate-limit store | Decided: in memory (`x/time/rate`) while `app` has one replica; an ADR says a second replica brings a shared store. | — |
 | D7 | Product language | (a) **pt-BR only**, no i18n (the boards). (b) pt-BR, en, es as in SpeakBigO. | **(a)**; i18n added by ticket if someone else ever uses it. |
-| D8 | Scheduler container (A4) beyond reconciliation | Also the 30-minute quota probe, daily digest, pairing pruning | **Yes**: one container, every timed job in it, each with `withoutOverlapping`. |
+| D8 | Scheduler container (A4) beyond reconciliation | Also the 30-minute quota probe, daily digest, pairing pruning | **Yes**: one container, every timed job in it, each run inside `pg_try_advisory_lock`. |
 
 ## ADRs to open in the new repositories
 
