@@ -6,7 +6,7 @@ What every generated repository carries to run in production on a VPS (ADR-0013)
 
 | File | Backend | Frontend |
 |---|---|---|
-| `Dockerfile`, target `prod` | the stack's production image (`recipes/backend/php.md`, *Implementation notes*), non-root, health check on `GET /health` | multi-stage: the `build` stage runs `pnpm build` with `VITE_API_URL` as a build argument, the `prod` stage is `nginxinc/nginx-unprivileged` serving `dist/` with SPA fallback to `index.html` and cache headers for hashed assets |
+| `Dockerfile`, target `prod` | the stack's production image (`recipes/backend/php.md`, *Implementation notes*; `recipes/backend/go.md`, item 3), non-root, health check on `GET /health` (the Go image has no `curl` and runs `/app/server healthcheck`) | multi-stage: the `build` stage runs `pnpm build` with `VITE_API_URL` as a build argument, the `prod` stage is `nginxinc/nginx-unprivileged` serving `dist/` with SPA fallback to `index.html` and cache headers for hashed assets |
 | `docker-compose.prod.yml` | services `app` and `db` (PostgreSQL, named volume) | service `app` |
 | `stack.env.example` (backend) / `.env.example` | every runtime variable with a production placeholder (`APP_ENV=production`, `change-me` passwords), copied into the Portainer stack; the backend's `.env.example` is the local development file (`recipes/backend/php.md`, item 23) | `VITE_API_URL` documented in `.env.example` (it is a build argument for production, a runtime variable only for the dev server) |
 | `.github/workflows/deploy.yml` | caller of the Shared Workflow | the same |
@@ -47,11 +47,11 @@ Production images are small, because the VPS pulls them on every deploy and hold
 - **Smallest base that works**: Alpine variants (`dunglas/frankenphp:<php>-alpine` with only the extensions the app uses, `nginxinc/nginx-unprivileged:<version>-alpine-slim`). Install production dependencies only (`composer install --no-dev --optimize-autoloader --classmap-authoritative`); one `RUN` per concern with the package cache removed in the same layer (`apk add --no-cache`).
 - **`.dockerignore`** excludes `.git`, `node_modules`, `vendor` (rebuilt in the image), `tests`, `docs`, `coverage`, `build`, `.env*` (but `.env.example`), `tools/`, `.claude/`, the agent team's `.agents/`, `.codex/` and `agents/`, and the other repository-only files, so the build context is small and no secret enters a layer.
 - **What measuring found** (2026-10-06): the frontend on `nginx-unprivileged:<version>-alpine` was 91.5 MB and on `-alpine-slim` 30 MB (the slim variant keeps the gzip module; it drops the optional ones). The backend on the Alpine FrankenPHP image was 440 MB until the `prod` stage was flattened (`FROM scratch` + `COPY --from=runtime / /`) after removing `php-cgi`, `phpdbg`, the PHP sources and the extension tooling in the `runtime` stage: 240 MB. Deleting files in a later layer does not shrink an image; the flattening does (`recipes/backend/php.md`, item 20).
-- **Measured, not assumed**: during generation `docker image ls` reports each `prod` image; the sizes are written in the README and the `0007-deploy-vps` ADR. Targets: frontend under 60 MB, backend under 250 MB. A size above the target is a failure to explain or fix, not to ignore.
+- **Measured, not assumed**: during generation `docker image ls` reports each `prod` image; the sizes are written in the README and the `0007-deploy-vps` ADR. Targets: frontend under 60 MB, backend under 250 MB (the Go image measured 24.8 MB on 2026-11-04). A size above the target is a failure to explain or fix, not to ignore.
 
 ## Migrations
 
-The backend's entrypoint runs the migrations (`php artisan migrate --force` in Laravel) before it starts serving, as in the user's boilerplates. Migrations are backward compatible (expand, then contract), so a rollback of the image is safe (`recipes/quality-gates.md`).
+The backend's entrypoint runs the migrations (`php artisan migrate --force` in Laravel; the binary's `serve` command in Go, with `serve:no-migrate` for any second process of the same image) before it starts serving, as in the user's boilerplates. Migrations are backward compatible (expand, then contract), so a rollback of the image is safe (`recipes/quality-gates.md`).
 
 ## The workflow
 

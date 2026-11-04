@@ -73,7 +73,7 @@ Confirmed in the backend recipes (Java, PHP, Node, Go); frontend and mobile vers
 | Stack | Lint & format | Typecheck | Tests + coverage | Architecture |
 |---|---|---|---|---|
 | Java | Spotless (google-java-format), Checkstyle, PMD | compiler | JUnit 5 + JaCoCo | ArchUnit |
-| Go | golangci-lint (broad rule set), gofmt / goimports | compiler, `go vet` | `go test -race -cover` + testify + mockery + testcontainers-go | arch-go or golangci-lint `depguard` |
+| Go | golangci-lint v2 (broad rule set), gofmt / goimports | `go build` + `go vet` | `go test -race` with `-coverpkg` on domain + application, testify, mockery; integration against the Compose PostgreSQL | arch-go |
 | Node (TypeScript) | ESLint + Prettier, jscpd | `tsc --noEmit` (strict) | Vitest + Testcontainers | dependency-cruiser |
 | PHP | Pint, PHPMD | PHPStan at max level (Larastan on Laravel) | PHPUnit + Mockery + coverage | Deptrac |
 | React | ESLint + Prettier | `tsc --noEmit` | Vitest + Testing Library + MSW | dependency-cruiser or eslint-plugin-boundaries |

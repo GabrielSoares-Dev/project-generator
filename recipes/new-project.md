@@ -34,7 +34,7 @@ Asked in the user's language, in three groups (identity, product, technology), a
 | Input | What is asked | Available in the factory today | Where the answer lands |
 |---|---|---|---|
 | Product name | the name people see (`Invoice Manager`) | free text | page title and header, README title, the `<title>` |
-| Project name | the slug, proposed from the product name (`invoice-manager`) | kebab-case | repository names `<slug>-backend` and `<slug>-frontend`, Composer package, dev container and Compose names, the PHP namespace in PascalCase (`InvoiceManager`) |
+| Project name | the slug, proposed from the product name (`invoice-manager`) | kebab-case | repository names `<slug>-backend` and `<slug>-frontend`, Composer package, dev container and Compose names, the PHP namespace in PascalCase (`InvoiceManager`) or the Go module path (`github.com/<owner>/invoice-manager-backend`) |
 | What it does, who maintains it | one sentence; what the team knows | free text | README description, the ADR of each choice, the team rule of the decision guide |
 | Product language | `pt-BR`, `en`… | any | `<html lang>`, every text the end user sees, the Problem Details `title` and `detail`, `ErrorCode::title()`, validation messages |
 | Dark mode | yes or no | yes, no | the `.dark` token set and the color-scheme hook, or neither |
@@ -43,7 +43,7 @@ Asked in the user's language, in three groups (identity, product, technology), a
 | Docker Hub user, host ports | the Docker Hub account name; a free port per repository on the VPS | free text, numbers | image names and ports in `docker-compose.prod.yml` and `deploy.yml` (`recipes/vps-deploy.md`) |
 | Monthly budget, alert email | an amount, an email | free text | recorded in the plan and the ADRs for the later cloud phase; nothing is created |
 | Repositories | backend, web frontend, mobile app | backend and web frontend | what is generated; mobile: not yet available |
-| Backend | language and variant | PHP with Laravel | Java, Node, Go: not yet available |
+| Backend | language and variant | PHP with Laravel; Go (learning stack, only when the user asks for it, `recipes/backend/go.md`) | Java, Node: not yet available |
 | Frontend | framework and design system | React with shadcn/ui | Angular: not yet available |
 | Database | engine | PostgreSQL | MySQL, DynamoDB, Firestore: not yet available |
 | Authentication | own JWT or an external provider | none generated yet | own JWT, Cognito, Firebase Auth, Auth0, Clerk: not yet available |

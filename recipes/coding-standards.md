@@ -50,29 +50,29 @@ public class CreateRoleUseCase {
 
 Hard limits, failing CI:
 
-| Limit | Value | Java | PHP | Frontend / mobile |
-|---|---|---|---|---|
-| Method / function length | 30 lines | Checkstyle `MethodLength` | PHPMD `ExcessiveMethodLength` | ESLint `max-lines-per-function` |
-| Cyclomatic complexity | 10 | Checkstyle `CyclomaticComplexity` / PMD | PHPMD `CyclomaticComplexity` | ESLint `complexity` |
-| Parameters | 4 (above that, an object / DTO) | Checkstyle `ParameterNumber` | PHPMD `ExcessiveParameterList` | ESLint `max-params` |
-| Nesting depth | 3 | Checkstyle `NestedIfDepth`, `NestedForDepth` | PHPStan / PHPMD custom rule | ESLint `max-depth` |
-| File / class length | 300 lines | Checkstyle `FileLength` | PHPMD `ExcessiveClassLength` | ESLint `max-lines` |
-| Duplicated code | blocks of 50+ repeated tokens | PMD CPD | PMD CPD (PHP) | jscpd |
+| Limit | Value | Java | PHP | Go | Frontend / mobile |
+|---|---|---|---|---|---|
+| Method / function length | 30 lines | Checkstyle `MethodLength` | PHPMD `ExcessiveMethodLength` | golangci-lint `funlen` (`lines: 30`) | ESLint `max-lines-per-function` |
+| Cyclomatic complexity | 10 | Checkstyle `CyclomaticComplexity` / PMD | PHPMD `CyclomaticComplexity` | `gocyclo` (`min-complexity: 10`) | ESLint `complexity` |
+| Parameters | 4 (above that, an object / DTO) | Checkstyle `ParameterNumber` | PHPMD `ExcessiveParameterList` | revive `argument-limit`; arch-go `maxParameters` in use cases | ESLint `max-params` |
+| Nesting depth | 3 | Checkstyle `NestedIfDepth`, `NestedForDepth` | PHPStan / PHPMD custom rule | revive `max-control-nesting` | ESLint `max-depth` |
+| File / class length | 300 lines | Checkstyle `FileLength` | PHPMD `ExcessiveClassLength` | revive `file-length-limit` | ESLint `max-lines` |
+| Duplicated code | blocks of 50+ repeated tokens | PMD CPD | PMD CPD (PHP) | `dupl` (`threshold: 50`) | jscpd |
 
 A tool's threshold is not always the limit: PHPMD reports a value **at or above** its `minimum` / `reportLevel`, so "at most 30 lines" is configured as 31 (see `recipes/backend/php.md`). Each recipe configures the tool so the table's value is the largest value that still passes.
 
 ## Writing rules
 
-| Rule | Java | PHP | Frontend / mobile |
-|---|---|---|---|
-| **Early return** (guard clauses) instead of nested `if`s | nesting limit above | nesting limit above; PHPMD `ElseExpression` | nesting limit above |
-| **No magic numbers or strings**: named constants or enums | Checkstyle `MagicNumber` (strings: review) | PHPStan / PHPMD custom rule (strings: review) | `@typescript-eslint/no-magic-numbers` (strings: review) |
-| **No boolean flag parameters** that switch behaviour (`create(role, true)`): split into two methods | PMD custom rule | PHPMD `BooleanArgumentFlag` | ESLint custom rule |
-| **Names say what things are**, no abbreviations (`permission`, not `perm`); methods start with a verb | review | review; PHPMD `ShortVariable` | review |
-| **Immutable by default**: `record`, `final`, `const`, `readonly`; mutate only when needed | Checkstyle `FinalLocalVariable`, `FinalParameters` | `readonly` classes and properties; PHPStan | `prefer-const`, `readonly` |
-| **Never swallow exceptions**: no empty `catch`, no catch that only logs and carries on, no generic catch-all | Checkstyle `EmptyCatchBlock`, PMD `AvoidCatchingGenericException` (log-and-continue: review) | PHPMD `EmptyCatchBlock` (catch-all `\Throwable` / log-and-continue: review) | `no-empty`, `@typescript-eslint/no-floating-promises` (log-and-continue: review) |
-| **No sentinel returned from lookups**: `Optional` in Java, nullable type in PHP, typed `undefined` in TypeScript | PMD `ReturnEmptyCollectionRatherThanNull` + review | PHPStan max level + review | `strictNullChecks` + review |
-| **No premature abstraction** (YAGNI): extract only on the third repetition | review | review | review |
+| Rule | Java | PHP | Go | Frontend / mobile |
+|---|---|---|---|---|
+| **Early return** (guard clauses) instead of nested `if`s | nesting limit above | nesting limit above; PHPMD `ElseExpression` | revive `early-return`, `indent-error-flow`, `superfluous-else` | nesting limit above |
+| **No magic numbers or strings**: named constants or enums | Checkstyle `MagicNumber` (strings: review) | PHPStan / PHPMD custom rule (strings: review) | `mnd`, `goconst` (strings) | `@typescript-eslint/no-magic-numbers` (strings: review) |
+| **No boolean flag parameters** that switch behaviour (`create(role, true)`): split into two methods | PMD custom rule | PHPMD `BooleanArgumentFlag` | revive `flag-parameter` | ESLint custom rule |
+| **Names say what things are**, no abbreviations (`permission`, not `perm`); methods start with a verb | review | review; PHPMD `ShortVariable` | review; revive `var-naming` | review |
+| **Immutable by default**: `record`, `final`, `const`, `readonly`; mutate only when needed | Checkstyle `FinalLocalVariable`, `FinalParameters` | `readonly` classes and properties; PHPStan | value DTOs with unexported fields; review | `prefer-const`, `readonly` |
+| **Never swallow exceptions**: no empty `catch`, no catch that only logs and carries on, no generic catch-all | Checkstyle `EmptyCatchBlock`, PMD `AvoidCatchingGenericException` (log-and-continue: review) | PHPMD `EmptyCatchBlock` (catch-all `\Throwable` / log-and-continue: review) | `errcheck`, revive `empty-block`, `errorlint`, `wrapcheck` (log-and-continue: review) | `no-empty`, `@typescript-eslint/no-floating-promises` (log-and-continue: review) |
+| **No sentinel returned from lookups**: `Optional` in Java, nullable type in PHP, typed `undefined` in TypeScript | PMD `ReturnEmptyCollectionRatherThanNull` + review | PHPStan max level + review | `(T, bool)` or `ErrNotFound`, `nilnil` + review | `strictNullChecks` + review |
+| **No premature abstraction** (YAGNI): extract only on the third repetition | review | review | review | review |
 
 ## Comments
 
@@ -87,4 +87,4 @@ This applies to tests too: no `// given` / `// when` / `// then`; the three phas
 
 ## Tooling
 
-Checkstyle and PMD (Java), PHPMD, PHPStan and PMD CPD (PHP), ESLint and jscpd (frontend and mobile) in CI, plus `/code-review` for what needs judgement. No SonarQube / SonarCloud: it is free only for public repositories, and these tools already cover the measurable rules.
+Checkstyle and PMD (Java), PHPMD, PHPStan and PMD CPD (PHP), golangci-lint and arch-go (Go), ESLint and jscpd (frontend and mobile) in CI, plus `/code-review` for what needs judgement. No SonarQube / SonarCloud: it is free only for public repositories, and these tools already cover the measurable rules.

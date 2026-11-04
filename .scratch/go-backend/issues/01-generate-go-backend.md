@@ -4,13 +4,13 @@
 
 **Blocked by:** None
 
-**Status:** in progress
+**Status:** in progress: the Template side is done; pending the agent-team Dev standards, `audit` proven where `vuln.go.dev` is reachable, the README, agent rules and CI callers of a full `/new-project` run with Go, and opening the dev container in VS Code
 
-- [ ] `recipes/backend/go.md` has *Generating the project*, proven by a run (`pet-clinic`, module `github.com/gabrielsoares-dev/pet-clinic-backend`)
-- [ ] `project lint`, `typecheck`, `arch`, `coverage` (80% on domain + application), `test:integration` (real PostgreSQL), `audit`, `openapi:check` pass one by one, and `project check` as a whole
-- [ ] Each gate proven failing once (a lint error, a forbidden import, coverage below 80%, a stale `openapi.json`)
-- [ ] `prod` image: distroless, non-root, migrates at start, answers `GET /health`, health check healthy, size measured
-- [ ] `.claude/skills/new-project/SKILL.md`, `recipes/new-project.md`, `recipes/quality-gates.md`, `recipes/coding-standards.md`, `recipes/agent-rules.md`, `recipes/vps-deploy.md` name Go where they name PHP
+- [x] `recipes/backend/go.md` has *Generating the project*, proven by a run (`pet-clinic`, module `github.com/gabrielsoares-dev/pet-clinic-backend`)
+- [x] `project lint`, `typecheck`, `arch`, `coverage` (80% on domain + application), `test:integration` (real PostgreSQL), `openapi:check` pass one by one, and `project check` as a whole up to `audit` (govulncheck cannot reach `vuln.go.dev` from this sandbox: to prove on the user's machine or in CI)
+- [x] Each gate proven failing once (a lint error, a forbidden import, coverage below 80%, a stale `openapi.json`)
+- [x] `prod` image: distroless, non-root, migrates at start, answers `GET /health`, health check healthy, size measured
+- [x] `.claude/skills/new-project/SKILL.md`, `recipes/new-project.md`, `recipes/quality-gates.md`, `recipes/coding-standards.md`, `recipes/agent-rules.md`, `recipes/vps-deploy.md` name Go where they name PHP
 - [ ] agent-team's Dev backend carries the Go standards (separate pull request in agent-team)
 
 ## Decisions taken in the run (to confirm in review)
