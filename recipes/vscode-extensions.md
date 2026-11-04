@@ -27,7 +27,7 @@ Repositories that hold Terraform (the backend) add **HashiCorp Terraform**, `has
 | **PHP (Laravel, Symfony, Slim)** | Intelephense `bmewburn.vscode-intelephense-client`; PHP Debug (Xdebug) `xdebug.php-debug`; PHPStan `SanderRonde.phpstan-vscode`; Laravel Pint `open-southeners.laravel-pint`; PHPUnit `recca0120.vscode-phpunit`. Laravel adds the official Laravel extension `laravel.vscode-laravel`. |
 | **Java (Spring Boot, Quarkus, plain)** | Extension Pack for Java `vscjava.vscode-java-pack` (language support, debugger, test runner, Maven or Gradle); Checkstyle `shengchen.vscode-checkstyle`. Spring Boot adds the Spring Boot Extension Pack `vmware.vscode-boot-dev-pack`; Quarkus adds `redhat.vscode-quarkus`. |
 | **Node (custom stack, NestJS, plain)** | ESLint `dbaeumer.vscode-eslint`; Prettier `esbenp.prettier-vscode`; Vitest `vitest.explorer`. |
-| **Go** (learning stack) | Go `golang.go`, which brings the debugger and the test runner and runs golangci-lint when it is set as the lint tool in `.vscode/settings.json`. |
+| **Go** (learning stack) | Go `golang.go`, which brings the debugger and the test runner; `.vscode/settings.json` sets `go.lintTool` to `golangci-lint-v2`, format on save with `source.organizeImports`, and `go.toolsManagement.autoUpdate` off (the tools are pinned in `tools/go.mod`). |
 
 ## Web frontend and mobile
 

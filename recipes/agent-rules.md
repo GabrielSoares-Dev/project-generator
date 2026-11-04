@@ -28,7 +28,7 @@ Short and always loaded, written following `/writing-for-agents`: **at most abou
 
 ## `CODING_STANDARDS.md`
 
-`recipes/coding-standards.md` resolved for the repository: the backend keeps *Use case shape* and drops *Component shape (frontend)*, the frontend the opposite; the size and complexity limits and the tooling section name only this stack's tools (Pint, PHPStan, Deptrac, PHPMD for PHP; ESLint, Prettier, dependency-cruiser for React). It is `/code-review`'s criterion, so every rule stays checkable.
+`recipes/coding-standards.md` resolved for the repository: the backend keeps *Use case shape* and drops *Component shape (frontend)*, the frontend the opposite; the size and complexity limits and the tooling section name only this stack's tools (Pint, PHPStan, Deptrac, PHPMD for PHP; golangci-lint, arch-go and `go vet` for Go; ESLint, Prettier, dependency-cruiser for React). It is `/code-review`'s criterion, so every rule stays checkable.
 
 ## `GLOSSARY.md`
 
@@ -36,7 +36,7 @@ In the Template's format (`GLOSSARY.md`: a title, one sentence on the product, a
 
 ## `docs/architecture.md` and `docs/conventions.md`
 
-- **`docs/architecture.md`**: the stack recipe resolved for this project. Backend: `recipes/backend/clean-architecture.md` plus `recipes/backend/php.md`'s conventions, with only the chosen database and the VPS deployment (no "or MySQL", no "on GCP"), the folder tree with the real namespace, and the mechanisms the project uses (none yet means the section says none). Frontend: `recipes/frontend/architecture.md`, `libraries.md` and `security.md`, resolved for React.
+- **`docs/architecture.md`**: the stack recipe resolved for this project. Backend: `recipes/backend/clean-architecture.md` plus the chosen language recipe's conventions (`recipes/backend/php.md` or `recipes/backend/go.md`, which for Go also asks every pull request to explain its idiomatic choices), with only the chosen database and the VPS deployment (no "or MySQL", no "on GCP"), the folder tree with the real namespace, and the mechanisms the project uses (none yet means the section says none). Frontend: `recipes/frontend/architecture.md`, `libraries.md` and `security.md`, resolved for React.
 - **`docs/conventions.md`**: naming, the method order inside a class (`recipes/coding-standards.md`), API paths and responses, errors (Problem Details with `code`, ADR-0011), logs, database naming (backend), the full `project` command table (`recipes/dev-commands.md`) and the Quality Gates with the command that runs each one alone and what the Lefthook hooks run.
 
 ## `docs/adr/`
