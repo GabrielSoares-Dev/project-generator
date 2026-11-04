@@ -23,6 +23,7 @@ Short and always loaded, written following `/writing-for-agents`: **at most abou
 3. **Commands**: a four-row table (`project setup`, `project start:dev`, `project test`, `project check`) and a pointer to `docs/conventions.md` for the rest.
 4. **Where things are**: `docs/architecture.md`, `docs/conventions.md`, `CODING_STANDARDS.md`, `GLOSSARY.md`, `docs/adr/`.
 5. **Autonomous Runs**: the three prompts (`Implement issue #N`, `Implement the next ready ticket`, `Implement all ready tickets`) with one line each, and the limit of parallel subagents (**3**, the number the coordinator reads; the human may change it here).
+   **The agent team**: two lines: the roles are in `.claude/agents/` and the flow between them in `docs/agents/agent-team-setup.md`; rendered files are never edited by hand (change agent-team or `agents/overrides/`, then `project agents:sync`).
 6. **`## Agent skills`**: the block `setup-matt-pocock-skills` writes, filled in: `### Issue tracker` (GitHub Issues, see `docs/agents/issue-tracker.md`), `### Triage labels` (the five default labels, see `docs/agents/triage-labels.md`), `### Domain docs` (single-context, see `docs/agents/domain.md`).
 
 ## `CODING_STANDARDS.md`
@@ -56,11 +57,35 @@ A row the user marked as "not available" still gets its ADR, saying what was wan
 
 ## `docs/agents/`
 
-Copied from the vendored skills' source (*Vendored skills* below), from `skills/engineering/setup-matt-pocock-skills/`: `issue-tracker-github.md` saved as `issue-tracker.md` (its "PRs as a request surface" flag left at **no**), `triage-labels.md` and `domain.md` as they are. The Template's own `docs/agents/issue-tracker.md` is the local-markdown variant and is never copied.
+Rendered by the agent team (*The agent team* below): `issue-tracker.md` (GitHub Issues, its "PRs as a request surface" flag at **no**), `triage-labels.md`, `domain.md`, and `agent-team-setup.md`, the checklist of what the repository needs once (labels, workflows, one scheduled task per role with its exact prompt). The Template's own `docs/agents/issue-tracker.md` is the local-markdown variant and is never copied.
 
-## Vendored skills
+## The agent team
 
-The skills listed in `recipes/repository-layout.md` come from **`github.com/mattpocock/skills`**, at the newest commit of `main` on the day of the run, which is then pinned: clone it with `--depth 1`, record the commit, and copy each listed skill's folder (`skills/<group>/<name>/`, with its `scripts/` and other files) to `.claude/skills/<name>/`. The source is MIT-licensed: copy its `LICENSE` to `.claude/skills/LICENSE`. Check that every listed skill exists in the clone; a missing one stops the run (it was renamed or removed upstream, and the list in `recipes/repository-layout.md` must be fixed first). The upstream files use CRLF: convert the copied files to LF (`find .claude/skills docs/agents -type f -exec sed -i 's/\r$//' {} +`), since the repository forces LF and Git otherwise warns on every file. The original `git-guardrails-claude-code/scripts/block-dangerous-git.sh` stays in the vendored folder as shipped; the script registered in `settings.json` is the adapted `.claude/hooks/guardrails.sh`. The clone is a temporary folder outside both repositories and is deleted afterwards (an explicit `rm -r <absolute path of the clone>` works; a path held in a shell variable is refused unless written `"${VAR:?}/…"`).
+The roles, skills and `docs/agents/` come from `github.com/GabrielSoares-Dev/agent-team` at its **latest release** on the day of the run, which is then pinned (ADR-0014):
+
+1. Write `.agents/config.json`:
+
+   ```json
+   {
+     "repository": "GabrielSoares-Dev/agent-team",
+     "version": "<latest release tag, e.g. v0.1.1>",
+     "kind": "<backend | frontend>",
+     "stallMinutes": 30,
+     "maxReturns": 3,
+     "supervised": true
+   }
+   ```
+
+2. Write `agents/overrides/<role>.md` only for what the product adds to a role, from the interview's answers: for a product with more than one language, `qa.md` with "Check every user-facing text in <the languages>." and `designer.md` with "Write every text in <the languages>.". No override otherwise.
+3. Clone agent-team at the tag into a temporary folder outside both repositories and run `<clone>/bin/agents-install --project <repository>`. It renders the roles of the repository's kind (`.claude/agents/`, `.codex/agents/`), the skills (`.claude/skills/`, `.agents/skills/`), `docs/agents/`, `.agents/scheduled-tasks.json`, the manifest and `.agents/agents-install`, which the `project` script calls from then on (`recipes/dev-commands.md`). Delete the clone afterwards (an explicit `rm -r <absolute path of the clone>`).
+4. Write the callers `.github/workflows/agent-team.yml` and `.github/workflows/agent-paths.yml` from agent-team's `examples/` at the same tag (`recipes/github-setup.md`, *The agent team workflows*).
+5. Prove it: `sh .agents/agents-install --project . --check` answers "up to date", and editing a rendered file makes it fail.
+
+Never edit a rendered file: change the source in agent-team, or add an override, and run `project agents:sync`. A repository generated before ADR-0014, with skills vendored from mattpocock/skills, adopts the agent team once with `sh .agents/agents-install --project . --adopt` after writing its config.
+
+## `.github/ISSUE_TEMPLATE/ticket.md`
+
+The agent-ready ticket of `recipes/autonomous-runs.md` (*Agent-ready tickets*) as an issue template, so a human writing a ticket by hand gets the same shape the PM writes: front matter `name: Ticket`, `about: An agent-ready ticket`, then the headings **Context**, **User story**, **Acceptance criteria** (given / when / then; QA verifies each by running something, so a criterion that cannot be run is rewritten), **Contract changes**, **UI**, **Out of scope**, **Blocked by**, **Feature flag**, **Idempotency key**, each with a one-line hint of what goes there.
 
 ## `.claude/settings.json` and the guardrail hook
 
@@ -104,7 +129,7 @@ Three `key=value` lines, read by `/sync-template`:
 ```
 commit=<the Template's full commit hash at generation>
 date=<YYYY-MM-DD>
-skills=mattpocock/skills@<the vendored commit hash>
+agents=GabrielSoares-Dev/agent-team@<the pinned release tag>
 ```
 
 When the Template has uncommitted changes during the run, add `dirty=true`, so a later sync knows the rules came from a state that was never recorded.

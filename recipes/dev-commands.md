@@ -23,12 +23,15 @@ Every repository `/new-project` creates has a `project` script at its root: one 
 | `project arch` | Architecture validation. |
 | `project audit` | Dependency audit. |
 | `project size` | Build and check the initial bundle size (frontend and mobile). |
-| `project check` | **Every Quality Gate that can run locally**, in the order CI runs them, stopping at the first failure. If `check` passes, the pull request's gates pass. |
+| `project check` | **Every Quality Gate that can run locally**, in the order CI runs them, stopping at the first failure, then `agents:check`. If `check` passes, the pull request's gates pass. |
 | `project db:migrate` | Apply pending migrations (backend). |
 | `project db:seed` | Run the development seed (backend). |
 | `project db:reset` | Drop the local database, migrate and seed (backend). Local data only. |
 | `project openapi` | Regenerate `openapi.json` (backend) or the API client from it (frontend). |
 | `project openapi:check` | Fail when `openapi.json` (backend) or the generated API client (frontend) is out of date. |
+| `project agents:sync` | Render the pinned agent team again (`sh .agents/agents-install --project .`), after changing `agents/overrides/`. |
+| `project agents:update <tag>` | Move to another agent-team release: the version in `.agents/config.json` and in the agent team's workflows, then render it (`--update <tag>`); the result is a pull request like any other. |
+| `project agents:check` | Fail when a rendered agent file differs from the pinned agent team (`--check`); part of `project check`. |
 | `project help` | List the commands. |
 
 ## README

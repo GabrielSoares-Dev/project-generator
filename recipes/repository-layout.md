@@ -19,27 +19,32 @@ What `/new-project` writes into every repository it creates, besides the code; w
 │   ├── architecture.md       the stack recipe, resolved for this project
 │   ├── conventions.md        naming, API, database, errors, logs, mechanisms in use
 │   ├── adr/                  the /new-project choices as ADRs, then future decisions
-│   └── agents/
-│       ├── issue-tracker.md  GitHub Issues
-│       ├── triage-labels.md
-│       └── domain.md
+│   └── agents/               rendered by the agent team (ADR-0014): issue-tracker.md, triage-labels.md, domain.md, agent-team-setup.md
+├── .agents/
+│   ├── config.json           the agent team's repository, pinned version, the repository's kind, the dispatcher's settings
+│   ├── agents-install        installs and updates the pinned agent team (rendered)
+│   ├── skills/               the skills, for Codex (rendered)
+│   ├── scheduled-tasks.json  the scheduled tasks this repository needs, for the platform (rendered)
+│   └── agent-team.manifest   the files the agent team wrote (rendered)
+├── agents/overrides/         this project's additions to a role, appended at render time (only when there are any)
 ├── .claude/
-│   ├── skills/               vendored agent skills (ADR-0005)
+│   ├── agents/               the agent team's roles for Claude Code (rendered)
+│   ├── skills/               the skills, for Claude Code (rendered)
 │   ├── hooks/guardrails.sh   blocks what an agent must never run (recipes/agent-rules.md)
 │   └── settings.json         agent permissions and hooks for this project
+├── .codex/agents/            the same roles in Codex's format (rendered, not used yet)
 ├── .vscode/                  extensions.json (frontend and mobile) and settings.json: the stack's VS Code extensions and format on save (recipes/vscode-extensions.md)
 ├── lefthook.yml              pre-commit and pre-push hooks calling the project script
-├── .github/workflows/        thin callers: `ci.yml` and `deploy.yml` (recipes/github-setup.md, recipes/vps-deploy.md)
+├── .github/workflows/        thin callers: `ci.yml`, `deploy.yml`, and the agent team's `agent-team.yml` and `agent-paths.yml` (recipes/github-setup.md, recipes/vps-deploy.md)
+├── .github/ISSUE_TEMPLATE/   `ticket.md`, the agent-ready ticket shape (recipes/agent-rules.md)
 ├── docker-compose.prod.yml   production stack run by Portainer on the VPS (recipes/vps-deploy.md)
 ├── .env.example              local runtime variables with placeholders (backend: also stack.env.example, the production ones)
 └── src/, tests/, Dockerfile (`dev` and `prod` targets), docker-compose.yml, .devcontainer/ (backend and web frontend; lists the extensions), ...
 ```
 
-## Vendored skills
+## The agent team
 
-Only the Matt Pocock skills the workflow uses are copied into a generated repository's `.claude/skills/`: `grill-with-docs`, `grilling`, `domain-modeling`, `to-spec`, `to-tickets`, `implement`, `implement-spec`, `tdd`, `code-review`, `pr`, `triage`, `diagnosing-bugs`, `codebase-design`, `improve-codebase-architecture`, `research`, `prototype`, `handoff`, `wait-what`, `retro` and `git-guardrails-claude-code`.
-
-Left out: `setup-matt-pocock-skills` (the configuration comes ready), `setup-pre-commit` (the Template uses Lefthook, not Husky), the niche ones (`scaffold-exercises`, `migrate-to-shoehorn`), and `wizard` and `teach`, which stay in the Template only.
+The agents that work in the repository (PM, Architect, Designer, the Dev of its kind, QA, Reviewer), the skills they load and `docs/agents/` come from the **agent-team repository** (`github.com/GabrielSoares-Dev/agent-team`) at a pinned release, rendered into the repository and committed (ADR-0014). The Template no longer clones mattpocock/skills: agent-team vendors every skill the projects use, so the skill list lives there. How `/new-project` installs it is in `recipes/agent-rules.md` (*The agent team*); rendered files are never edited by hand, and `project check` fails when they drift.
 
 ## Agent guardrails
 

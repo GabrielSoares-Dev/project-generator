@@ -10,4 +10,4 @@ The original plan was to rent a VPS and leave the agent running there. Instead, 
 ## Consequences
 
 - Everything the agent needs must be in the repository or in the cloud environment's settings: user-installed plugins (such as agent skills) do not follow the agent there, and secrets are configured per cloud environment, never read from a local `.env`.
-- Agent skills (Matt Pocock's set) are vendored into `.claude/skills/` in the Template and copied into every repository the Template creates, instead of being installed as a user plugin. The local plugin install is removed to avoid every skill appearing twice.
+- Agent skills are committed into every repository the Template creates, instead of being installed as a user plugin. The local plugin install is removed to avoid every skill appearing twice. Since ADR-0014 they come with the agent team from agent-team at a pinned release, not from a mattpocock/skills clone made by the Template.
