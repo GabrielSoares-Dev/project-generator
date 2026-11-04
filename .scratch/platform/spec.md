@@ -27,6 +27,17 @@ Q1 for the user only; Q3 GitHub is the state of the work, the platform keeps onl
 | A5 | Repositories: backend and web frontend now; the mobile app later through `/new-project`'s add mode. |
 | A6 | On the VPS (ADR-0013) with a public domain, since GitHub and the dispatcher post to it. |
 
+## Ticket, notifications, health and quota (design boards 11 to 14)
+
+| Id | Decision |
+|---|---|
+| M1 | **Ticket screen**: the stages (PM, Dev, QA, Reviewer, your merge), a timeline built from the events and GitHub (who picked it up, handoff notes, verdicts with their evidence, returns, PRs and checks, the user's comments), the acceptance criteria with their state, the PR and its checks, and **Comment** (F6). Actions: Decide (when escalated), Try again (F8), Pause this ticket, Abandon. Every card and link that names a ticket opens it. |
+| M2 | **Notifications**: web push to the browser and to the phone (on iOS only with the platform added to the home screen), for pending decision, escalation, stall and probable quota out; one per event, grouped by ticket; an optional daily digest built from the events (F5); quiet hours that hold and deliver at the end. "Ok, go on" on the notification exists only for the supervised hand-off and is the user's `/ok`; merge, decisions and abandon always open the screen. |
+| M3 | **Project health**, per repository: App installed and webhooks arriving, the 30 labels, the workflows at the config's version, `agents:check` green, `main` protection, each scheduled task marked with its model (warns when it differs from `"models"`), each role's last wake-up from the events (a `run:<role>` label with no session is a problem), the dispatcher's last event, tick and reconciliation. |
+| M4 | **Quota**: the platform cannot read the subscription's quota, so it infers it: **3 stalls of different roles or tickets within 30 minutes** pause the start of new tickets like "Pause all" (F4), marked as *quota*, and hold the retries instead of spending them. Every 30 minutes one stalled ticket is released as a probe; a verdict ends the pause and the stalled ones come back one at a time without counting a retry. "Resume now" and "Not quota, resume" (stalls handled as usual) are the user's. A banner on every screen and on the wall. |
+
+Open, for the dispatcher: what **Pause this ticket** and **Abandon** do on GitHub (a `paused` label per ticket; closing the issue as not planned and the PR), and the probe of M4 (`maxConcurrent` 0 plus one release).
+
 ## Login and access (design board 10)
 
 | Id | Decision |
