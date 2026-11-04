@@ -26,3 +26,20 @@ Q1 for the user only; Q3 GitHub is the state of the work, the platform keeps onl
 | A4 | Webhooks are processed at once, idempotent by delivery id; a **reconciliation every 15 minutes** compares the projection with GitHub. It runs in **its own scheduler container** (one replica) in `docker-compose.prod.yml`, same image, another command, an exception to the recipes' ban on in-container schedulers, recorded as an ADR of the platform; if it holds, the Coach proposes it for the VPS phase of the recipes. |
 | A5 | Repositories: backend and web frontend now; the mobile app later through `/new-project`'s add mode. |
 | A6 | On the VPS (ADR-0013) with a public domain, since GitHub and the dispatcher post to it. |
+
+## Buttons (design board 8)
+
+| Id | Decision |
+|---|---|
+| F1 | A human comment answers the role that stopped to ask: the Architect or the Designer, when its last comment carries a question marker; not the PM. **agent-team**: the roles mark their questions, the dispatcher wakes that role. |
+| F2 | "Brainstorm with the team" becomes **"Free conversation with the PM"**: a `needs-spec` issue without a settled idea. |
+| F3 | "Ask QA's opinion" is removed: QA only verifies pull requests. |
+| F4 | **Pause all**: a `paused` state (label or config) the dispatcher respects: nothing new starts (no new tickets, hand-offs or retries), what runs finishes, the screens show PAUSED until the user resumes. **agent-team**: the dispatcher rule. |
+| F5 | **Team stand-up**: a summary built from the day's events, without AI (what came in, went out, is stalled, waits for the user). Platform only. |
+| F6 | The loose "message to the team" box is removed; each ticket has **Comment**, which writes the user's comment on it; the agent reads it on its next run; priority stays the queue order. |
+| F7 | "Generate project" appears only on step 6 of New Project. |
+| F8 | **Try again** (stalled or escalated) clears `escalated` and `stalled` and restores the stage and its `run:` label; **"Dev is right / QA is right"** posts the decision, resets the return count and starts the role that lost. **agent-team**: the dispatcher counts returns only after the last tie-break marker. |
+
+## Screens added to the canvas
+
+New Project steps 3–6 (Stack, Repositories, Team, Generate), the team wall (TV), Decisions on the phone, Metrics (from the events; no money cost), the button flows, and the design system board (colors, the six agent states as semantic variants, type including the TV scale, spacing, radii, components).
