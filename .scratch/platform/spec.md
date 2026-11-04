@@ -27,6 +27,15 @@ Q1 for the user only; Q3 GitHub is the state of the work, the platform keeps onl
 | A5 | Repositories: backend and web frontend now; the mobile app later through `/new-project`'s add mode. |
 | A6 | On the VPS (ADR-0013) with a public domain, since GitHub and the dispatcher post to it. |
 
+## Login and access (design board 10)
+
+| Id | Decision |
+|---|---|
+| — | **Login**: "Sign in with GitHub" through the platform's GitHub App (OAuth with `state`). The backend exchanges the code, rejects any login other than the owner's (no session is opened), stores the user-to-server token encrypted and opens an `HttpOnly` cookie session; the token never reaches the browser. It expires in 8 hours and is refreshed with the refresh token; when the refresh fails (App revoked, 6 months), the session ends and the screen says "Session expired", keeping unsent drafts in the browser. |
+| — | **First access**: the list of repositories with and without the App installed, and a button to install it on GitHub; a project whose repository lacks the App shows "no access" in place of its cards. |
+| — | **TV**: no GitHub login. `/wall` shows a pairing code; the owner confirms it while signed in and the TV gets a **display token** that only reads the wall (A3), listed in the account menu with "Revoke". |
+| — | **Account menu** at the foot of the side menu: the account, the paired screens, the App's repositories, "Sign out". The mobile app later uses the same GitHub login. |
+
 ## The current project
 
 | Id | Decision |
