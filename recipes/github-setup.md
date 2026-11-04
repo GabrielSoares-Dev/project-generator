@@ -32,7 +32,7 @@ Each repository also has the agent team's two callers, from agent-team's `exampl
 
 `project agents:update` moves both to a new tag with the config.
 
-**Once per account**: agent-team and the `workflows` repository are private, so their reusable workflows run in other repositories only after each one allows it: *Settings → Actions → General → Access → Accessible from repositories owned by the user*. Without it every caller fails before starting, with no job, and the required `paths / paths` check never reports (seen in the Ensemble run of 2026-11-04: `agent-team.yml`, `agent-paths.yml` and `uptime.yml` failed at once while `ci.yml`, calling `workflows`, passed).
+**Once per account**: the `workflows` repository is private, so its reusable workflows run in other repositories only after *Settings → Actions → General → Access → Accessible from repositories owned by the user*; without it every caller fails before starting, with no job. **agent-team must be public**: the same setting lets its callers start, but its workflows then check agent-team out with the calling repository's `GITHUB_TOKEN`, which cannot read a private repository (`Repository not found`), so `paths / paths` and the dispatcher fail (both seen in the Ensemble run of 2026-11-04). Check before publishing: `gh repo view GabrielSoares-Dev/agent-team --json visibility`.
 
 ## Creating the repositories
 
