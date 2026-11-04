@@ -1,12 +1,12 @@
-# Squad: architecture plan
+# Ensemble: architecture plan
 
-Status: proposal for the human. Built on `.scratch/platform/spec.md` (its decisions are settled and not reopened here). Written by the Architect role (`agent-team/roles/architect.md`). The repositories do not exist yet: they will be `squad-backend` and `squad-frontend`, generated with `/new-project`; this plan feeds that interview (Q6) and the first tickets.
+Status: proposal for the human. Built on `.scratch/platform/spec.md` (its decisions are settled and not reopened here). Written by the Architect role (`agent-team/roles/architect.md`). The repositories do not exist yet: they will be `ensemble-backend` and `ensemble-frontend`, generated with `/new-project`; this plan feeds that interview (Q6) and the first tickets.
 
 ## 0. Stack
 
 ### What the factory can generate
 
-`/new-project` generates a **Go** backend (`recipes/backend/go.md`, the learning stack, chosen by the user in D1 and proven by the Go run of `.scratch/go-backend/`), a **React** frontend with shadcn/ui and **PostgreSQL**, with **no authentication and no extra mechanisms**. Everything Squad needs beyond the skeleton (GitHub login, SSE, the scheduler process, encryption) is **built by tickets in the project**, not by the generator.
+`/new-project` generates a **Go** backend (`recipes/backend/go.md`, the learning stack, chosen by the user in D1 and proven by the Go run of `.scratch/go-backend/`), a **React** frontend with shadcn/ui and **PostgreSQL**, with **no authentication and no extra mechanisms**. Everything Ensemble needs beyond the skeleton (GitHub login, SSE, the scheduler process, encryption) is **built by tickets in the project**, not by the generator.
 
 ### Backend: Go (`recipes/backend/go.md`), one backend organised in modules
 
@@ -43,7 +43,7 @@ Mobile (Expo, A5) comes later through add mode; it uses the same API with Bearer
 
 ## 1. Context
 
-The user leads an AI agent team (agent-team: PM, Architect, Designer, Devs, QA, Reviewer, Release, Coach) across several projects. GitHub holds the state of the work (Q3) and the dispatcher moves it with labels; the user today follows it on GitHub. Squad lets the user **see everything waiting for them and act on it** (Decisions), **watch the team live** (the TV wall), **follow each project** (control room, ticket) and **talk to the PM** (chat), from the web on a phone or desktop. First slice, in order (T5): Decisions, team wall, control room, PM chat; then notifications, ticket, health, quota, metrics, New Project.
+The user leads an AI agent team (agent-team: PM, Architect, Designer, Devs, QA, Reviewer, Release, Coach) across several projects. GitHub holds the state of the work (Q3) and the dispatcher moves it with labels; the user today follows it on GitHub. Ensemble lets the user **see everything waiting for them and act on it** (Decisions), **watch the team live** (the TV wall), **follow each project** (control room, ticket) and **talk to the PM** (chat), from the web on a phone or desktop. First slice, in order (T5): Decisions, team wall, control room, PM chat; then notifications, ticket, health, quota, metrics, New Project.
 
 The platform keeps only what GitHub lacks (A3): an append-only event log, a projection for the screens, the project registry and encrypted secrets. It never starts an agent except through GitHub labels and the PM task's `/fire` (P1b).
 
@@ -52,7 +52,7 @@ The platform keeps only what GitHub lacks (A3): an append-only event log, a proj
 ```mermaid
 flowchart LR
   subgraph Clients
-    WEB[Web SPA<br/>squad-frontend<br/>phone and desktop]
+    WEB[Web SPA<br/>ensemble-frontend<br/>phone and desktop]
     TV[TV browser<br/>/wall, display cookie]
     MOB[Expo app<br/>later]
   end
@@ -65,7 +65,7 @@ flowchart LR
   end
 
   subgraph GitHub
-    GHAPP[Squad GitHub App<br/>webhooks, OAuth]
+    GHAPP[Ensemble GitHub App<br/>webhooks, OAuth]
     REPOS[Project repositories<br/>issues, PRs, labels]
     DISP[agent-team dispatcher<br/>GitHub Actions]
   end
@@ -375,7 +375,7 @@ Alternatives considered: **Node (Fastify) backend** (`recipes/backend/node.md`):
 
 Contract and backend first; each frontend ticket is blocked by the backend ticket that publishes its endpoints. Generation (`/new-project`) comes before all of them.
 
-Backend (`squad-backend`):
+Backend (`ensemble-backend`):
 1. Project registry and GitHub App configuration (projects, repositories, installations from `installation` webhooks), `GET /v1/projects`, `GET /v1/account`.
 2. Login with GitHub: OAuth through the App, owner check, encrypted credential, session cookies, refresh with row lock, logout, `SESSION_EXPIRED`.
 3. Event log and GitHub webhook ingestion (HMAC, idempotent by delivery id).
@@ -389,7 +389,7 @@ Backend (`squad-backend`):
 11. Scheduler container, reconciliation every 15 minutes, `job_runs`.
 12. Notifications (M2), then ticket screen (M1), health (M3), quota (M4), stand-up (F5), metrics, role model pull request.
 
-Frontend (`squad-frontend`):
+Frontend (`ensemble-frontend`):
 1. App shell: side menu with project selector (chip on the phone), auth guard, "Session expired" with drafts kept, account menu.
 2. `shared/realtime`: one `EventSource`, query invalidation, reconnect.
 3. Decisions screen (desktop and phone).
