@@ -1,6 +1,6 @@
 # 01: Go backend generated and green
 
-**What to build:** `/new-project` generates the Go backend (`recipes/backend/go.md`, the learning stack) the way it generates Laravel: the clean-architecture structure, PostgreSQL in Docker Compose, `GET /health` with the live version, a committed `openapi.json`, the `project` script, the dev container and the `prod` image, with every backend Quality Gate run one by one. A new section *Generating the project* in `recipes/backend/go.md` records the steps learned, and the skill and `recipes/new-project.md` list Go as available. Needed before the agent-team platform (`.scratch/platform/spec.md`, D1).
+**What to build:** `/new-project` generates the Go backend (`recipes/backend/go.md`, the learning stack) the way it generates Laravel: the clean-architecture structure, PostgreSQL in Docker Compose, `GET /health` with the live version, a committed `openapi.json`, the `project` script, the dev container and the `prod` image, with every backend Quality Gate run one by one. A new section *Generating the project* in `recipes/backend/go.md` records the steps learned, and the skill and `recipes/new-project.md` list Go as available. Needed before the agent-team platform (Ensemble, `docs/product/spec.md` in ensemble-backend, D1).
 
 **Blocked by:** None
 
