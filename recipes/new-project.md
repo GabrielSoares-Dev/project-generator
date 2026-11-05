@@ -37,7 +37,7 @@ Asked in the user's language, in three groups (identity, product, technology), a
 | Project name | the slug, proposed from the product name (`invoice-manager`) | kebab-case | repository names `<slug>-backend` and `<slug>-frontend`, Composer package, dev container and Compose names, the PHP namespace in PascalCase (`InvoiceManager`) or the Go module path (`github.com/<owner>/invoice-manager-backend`) |
 | What it does, who maintains it | one sentence; what the team knows | free text | README description, the ADR of each choice, the team rule of the decision guide |
 | Product language | `pt-BR`, `en`… | any | `<html lang>`, every text the end user sees, the Problem Details `title` and `detail`, `ErrorCode::title()`, validation messages |
-| Dark mode | yes or no | yes, no | the `.dark` token set and the color-scheme hook, or neither |
+| Dark mode | light and dark, light only, or dark only | all three | light and dark: the `.dark` token set and the color-scheme hook; light only: neither; dark only: one dark token set and `color-scheme: dark` (`recipes/frontend/react.md`, item 13) |
 | Brand Tokens | primary color as `#rrggbb`, corner radius (sharp, default, round), font (system stack or a named one) | all | CSS variables in `src/index.css`; the generator converts the color with `.claude/skills/new-project/tools/brand-tokens.mjs` |
 | Domain | `example.com` | free text | the README and the ADRs (`app.<domain>`, `api.<domain>`), the repository variables to set (`HEALTH_URL`, `VITE_API_URL`); ignored locally |
 | Docker Hub user, host ports | the Docker Hub account name; a free port per repository on the VPS | free text, numbers | image names and ports in `docker-compose.prod.yml` and `deploy.yml` (`recipes/vps-deploy.md`) |
