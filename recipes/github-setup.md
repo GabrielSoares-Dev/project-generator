@@ -16,7 +16,7 @@ permissions:
   pull-requests: read
 jobs:
   ci:
-    uses: GabrielSoares-Dev/workflows/.github/workflows/project-ci.yml@v1
+    uses: GabrielSoares-Dev/workflows/.github/workflows/project-ci.yml@1.1
     with:
       gates: lint typecheck arch coverage test:integration audit openapi:check
 ```
@@ -32,7 +32,7 @@ Each repository also has the agent team's two callers, from agent-team's `exampl
 
 `project agents:update` moves both to a new tag with the config.
 
-**Once per account**: the `workflows` repository is private, so its reusable workflows run in other repositories only after *Settings → Actions → General → Access → Accessible from repositories owned by the user*; without it every caller fails before starting, with no job. **agent-team must be public**: the same setting lets its callers start, but its workflows then check agent-team out with the calling repository's `GITHUB_TOKEN`, which cannot read a private repository (`Repository not found`), so `paths / paths` and the dispatcher fail (both seen in the Ensemble run of 2026-11-04). Check before publishing: `gh repo view GabrielSoares-Dev/agent-team --json visibility`.
+**Once per account**: the `workflows` repository is private, so its reusable workflows run in other repositories only after *Settings → Actions → General → Access → Accessible from repositories owned by the user*; without it every caller fails before starting, with no job. **agent-team, when private, needs a read token**: the access setting lets its callers start, but its workflows then check agent-team out, and the calling repository's `GITHUB_TOKEN` cannot read a private repository (`Repository not found`, seen in the Ensemble run of 2026-11-04). Since agent-team v0.5.1 the callers pass `AGENT_TEAM_READ_TOKEN`: set it in every generated repository, a fine-grained token with *Contents: Read-only* on agent-team only (`gh secret set AGENT_TEAM_READ_TOKEN --repo <owner>/<repo>`); it expires, so the user notes the date. A public agent-team needs no token. **The CI caller pins `project-ci.yml@1.1`**: the `v1` tag predates the step that lets the dev container's user write the checkout, so a web frontend, whose container runs as `node`, fails `./project setup` with `cp: cannot create regular file '.env': Permission denied`.
 
 ## Creating the repositories
 
