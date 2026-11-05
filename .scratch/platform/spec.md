@@ -76,12 +76,6 @@ Open, for the dispatcher: what **Pause this ticket** and **Abandon** do on GitHu
 
 New Project steps 3–6 (Stack, Repositories, Team, Generate), the team wall (TV), Decisions on the phone, Metrics (from the events; no money cost), the button flows, and the design system board (colors, the six agent states as semantic variants, type including the TV scale, spacing, radii, components).
 
-## Name
-
-| Id | Decision |
-|---|---|
-| N1 | The platform is **Ensemble** (slug `ensemble`): `ensemble-backend`, `ensemble-frontend`, module `github.com/gabrielsoares-dev/ensemble-backend`. The working name "Squad" of the design boards is replaced. |
-
 ## Stack (architecture plan, `architecture.md`)
 
 | Id | Decision |
