@@ -4,7 +4,7 @@
 
 **Blocked by:** 03, 05
 
-**Status:** done (recipes and skill; proven on the next /new-project run)
+**Status:** done, proven by the Ensemble run (2026-11): both repositories pin agent-team, render the team, run `agents:check` in `project check` and `paths` in CI; the activation outside the repositories is `recipes/agent-team-activation.md`
 
 - [x] `.agents/config.json` pins agent-team's tag; `project agents:sync` renders; `project agents:update <tag>` bumps it (agent-team v0.1.1)
 - [x] `project check` runs `agents:check` (`recipes/dev-commands.md`)
