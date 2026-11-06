@@ -17,7 +17,7 @@ Each repository carries `scripts/agent-setup.sh`, set as the cloud environment's
 
 ## One ticket per session, several at once
 
-Each ticket gets a fresh session and its own pull request (a clean context per ticket, small squash-merged pull requests). Several tickets can be worked at once in two ways, always one pull request per ticket:
+Each ticket gets a fresh session and its own pull request (a clean context per ticket, small pull requests merged by rebase). Several tickets can be worked at once in two ways, always one pull request per ticket:
 
 - **Several sessions in parallel**, each started with `Implement issue #N`.
 - **`Implement all ready tickets`**: one coordinating session lists the open `ready-for-agent` tickets whose blockers are closed and starts **one subagent per ticket in parallel**, each in its own git worktree and branch, each running `/implement` and opening its own pull request. The coordinator ends with a summary of what was opened and what got stuck. At most **3 subagents** run at once (configurable in `AGENTS.md`), to keep within the Pro plan's limits.

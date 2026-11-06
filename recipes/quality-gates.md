@@ -35,7 +35,7 @@ CI remains the authority: hooks can be bypassed, CI cannot.
 - **Events**: past tense, PascalCase (`RoleCreated`, `OrderPaid`).
 - **Queues and topics**: kebab-case `<project>-<subject>`, `-dlq` suffix for dead-letter queues and `-dev` for the Local Review resources (`invoice-manager-order-paid`, `invoice-manager-order-paid-dlq`).
 - **Cloud resources** (Terraform): `<project>-<environment>-<resource>` (`invoice-manager-prod-api`), every resource tagged with `project` and `environment` so the bill can be read per project.
-- **Squash merge only**: each pull request becomes a single commit on `main`, whose message is the pull request title, so `main` has one line per ticket and reverting a ticket is reverting one commit. The pull request title must follow Conventional Commits; intermediate commits inside the pull request may be looser. Repository settings allow only squash merging.
+- **Rebase and merge only** (the user's choice): each commit of a pull request lands on `main` as it was written, on top of the latest `main`, so `main` stays linear and keeps the steps of each ticket. Every commit, not only the pull request title, follows Conventional Commits and leaves the code passing; a pull request holds no merge commits (it is brought up to date by rebasing, GitHub's "Update with rebase"), and history on a pushed branch is never rewritten by force-pushing. Reverting a ticket is reverting its commits. Repository settings allow only rebase merging.
 - **Branch names**: `<type>/<ticket-number>-<description>` with the commit types (`feature/42-create-role`, `fix/57-login-timeout`), linking each branch to its issue. A CI check rejects pull requests from branches outside the pattern.
 
 ## Deploy versions and rollback
