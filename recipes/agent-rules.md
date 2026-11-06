@@ -89,6 +89,8 @@ The agent-ready ticket of `recipes/autonomous-runs.md` (*Agent-ready tickets*) a
 
 ## `.claude/settings.json` and the guardrail hook
 
+**No signature of Claude** (the user's choice, for every project): the file also sets `"attribution": { "commit": "", "pr": "" }`, so Claude Code adds no `Co-Authored-By` line to commits and no footer to pull request descriptions, and every role of agent-team forbids any mark of Claude in commits, descriptions, comments and reviews (agent-team v0.6.4). Everything reads as written by the owner.
+
 The rules of `recipes/repository-layout.md` (*Agent guardrails*) in two layers, because a permission rule matches only the command text Claude writes (`git -C . push`, a full path or `sh -c` slip past it) while a hook sees every Bash call:
 
 1. **`permissions.deny`**, the readable list:
