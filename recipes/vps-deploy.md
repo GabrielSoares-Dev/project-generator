@@ -69,23 +69,28 @@ permissions:
   contents: write
 jobs:
   deploy:
-    uses: GabrielSoares-Dev/workflows/.github/workflows/docker-portainer-deploy.yml@v1
+    uses: GabrielSoares-Dev/workflows/.github/workflows/docker-portainer-deploy.yml@1.2
     with:
       dockerfile_target: prod
       image: <docker-hub-user>/<slug>-backend
       rollback_tag: ${{ inputs.tag }}
       health_url: ${{ vars.HEALTH_URL }}
+      portainer_stack: <slug>-backend
+      portainer_insecure: true
     secrets:
       docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
       docker_hub_access_token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      portainer_webhook_url: ${{ secrets.PORTAINER_WEBHOOK_URL }}
+      portainer_url: ${{ secrets.PORTAINER_URL }}
+      portainer_api_key: ${{ secrets.PORTAINER_API_KEY }}
 ```
 
-The frontend's caller adds `build_args: VITE_API_URL=${{ vars.VITE_API_URL }}` and its own `image`. The Shared Workflow (`recipes/shared-workflows.md`) does, in order: build the `prod` target → push `deploy-YYYY-MM-DD.N` and `latest` → POST the Portainer webhook → when `health_url` is set, poll it until it answers 200 and, for the backend, reports the new version → tag the commit and publish the GitHub Release. With `rollback_tag` it skips the build: it pulls that tag, pushes it as `latest` and calls the webhook.
+The stack is updated through the **Portainer API**, which Portainer CE serves: stack and container webhooks are a Portainer Business feature (found on Ensemble's VPS, 2026-11). `portainer_insecure: true` accepts Portainer's default self-signed certificate on port 9443; drop it once Portainer sits behind a real certificate. With Portainer Business, the caller may pass `portainer_webhook_url: ${{ secrets.PORTAINER_WEBHOOK_URL }}` instead of the API secrets and input.
+
+The frontend's caller adds `build_args: VITE_API_URL=${{ vars.VITE_API_URL }}` and its own `image`. The Shared Workflow (`recipes/shared-workflows.md`) does, in order: build the `prod` target → push `deploy-YYYY-MM-DD.N` and `latest` → redeploy the stack through the Portainer API (find it by `portainer_stack`, keep its compose file and environment, `pullImage`), or POST the webhook when one is given → when `health_url` is set, poll it until it answers 200 and, for the backend, reports the new version → tag the commit and publish the GitHub Release. With `rollback_tag` it skips the build: it pulls that tag, pushes it as `latest` and updates the stack the same way.
 
 ## What the VPS needs, once (listed for the user, `recipes/new-project.md`)
 
-- Docker and Portainer running; a stack per repository created from its `docker-compose.prod.yml`, with the variables of `.env.example` filled in the stack's environment; the stack's **webhook** enabled, its URL stored as `PORTAINER_WEBHOOK_URL`.
+- Docker and Portainer running; a stack per repository created from its `docker-compose.prod.yml`, with the variables of `.env.example` filled in the stack's environment; a Portainer **access token** (My account → Access tokens) stored as `PORTAINER_API_KEY` and Portainer's base URL (`https://<vps-ip>:9443`) as `PORTAINER_URL`, the port reachable from GitHub's runners. The images must exist on Docker Hub before a stack is created: the first DEPLOY run pushes them and fails at the Portainer step, the stacks are created from the pushed images, then DEPLOY runs again.
 - A reverse proxy with TLS in front of the published ports, and DNS for `app.<domain>` and `api.<domain>`.
 - A Docker Hub account and an access token, stored as `DOCKER_HUB_USERNAME` and `DOCKER_HUB_ACCESS_TOKEN`; repository variables `HEALTH_URL` and (frontend) `VITE_API_URL`.
 - A scheduled dump of the database volume to a place off the VPS.
