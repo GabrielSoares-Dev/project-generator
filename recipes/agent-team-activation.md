@@ -6,7 +6,7 @@ What turns a generated project's agent team on, after `/new-project` has publish
 
 1. **The Claude GitHub App** (github.com/apps/claude) installed on every repository of the project. Without it, scheduled tasks receive no GitHub events.
 2. **Labels**: `bin/agents-labels --repository <owner>/<repo>` (`recipes/github-setup.md`, item 5).
-3. **Secrets the callers read**: `AGENT_TEAM_READ_TOKEN` while agent-team is private (a fine-grained token, Contents read-only on agent-team); `BACKEND_READ_TOKEN` in the frontend (Contents read-only on the backend), for `openapi:check`. Without the first, `paths` and `dispatch` fail at the checkout with `Repository not found`; without the second, the frontend's `gates` fail at `openapi:check`.
+3. **Secrets the callers read**: `AGENT_TEAM_READ_TOKEN` (a fine-grained token: Contents read-only on agent-team while it is private, and, from agent-team v0.6.0, Issues read-only on every repository of the project, since the dispatcher reads the state of a ticket's `Blocked by` issues in the other repositories); `BACKEND_READ_TOKEN` in the frontend (Contents read-only on the backend), for `openapi:check`. Without the first, `paths` and `dispatch` fail at the checkout with `Repository not found`; without the second, the frontend's `gates` fail at `openapi:check`.
 4. **The uptime workflow off until the first deploy** (Actions, agent-team uptime, Disable workflow): before production exists it opens a `Production is down` issue that never closes.
 
 ## 2. A cloud environment where `./project check` passes
@@ -58,3 +58,7 @@ Rejected alternative: one shared task per role for every project, fired through 
 ## 4. The first ticket
 
 With `"supervised": true` in `.agents/config.json`, the human applies `ready-for-agent` to a `spec-ready` ticket and answers each `/ok` the dispatcher asks for between hand-offs. A run's transcript opens from the task's History on claude.ai/code/routines.
+
+## 5. Running the backlog
+
+From agent-team v0.6.0 the order is each ticket's `## Blocked by`: the human may apply `ready-for-agent` to every `spec-ready` ticket at once. The ones whose blockers are open wait as `blocked`, and each merge releases what it unblocked, at most `maxConcurrent` at a time. With `"supervised": false` (the user's choice for Ensemble once the first tickets ran clean) the Dev, QA and the Reviewer hand off without `/ok`, and the human only reviews and merges what reaches `ready-for-human`. A ticket whose `## UI` section changes a screen or the UX (a flow, an interaction, texts, states) goes to the Designer first: its specification waits on the issue in `design-review` until the human replies `/approve` (or comments changes, and the Designer revises), and only then the Dev starts (the user's choice, for every project: every change to a screen or to the UX is approved before it is built).
