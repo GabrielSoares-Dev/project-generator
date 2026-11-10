@@ -61,6 +61,10 @@ After the interview the agent shows **the plan in the conversation**: the reposi
 
 `/new-project` also has an **add mode** for something new in a project that already exists, such as a mobile app next to an existing backend and web frontend. It reads the project's ADRs and `.template-version`, interviews only about what is new, generates the new repository, and opens pull requests in the existing ones for what the new repository needs (for example, the backend's Terraform). The same guardrails apply: nothing is created before the user confirms the plan, and cloud resources are still created only by the pipeline.
 
+## Adopting an existing repository
+
+`/new-project` also has an **adopt mode** (ADR-0017) for a repository the Template did not generate: it diagnoses the repository, then opens one pull request in it with the agent rules, the `project` script, the CI callers and the agent team, written around the code as it is. It never rewrites the code; where the repository differs from the recipe, an ADR says the agents follow the repository. It runs from an adoption issue of the Template, through the Generator routine or locally with `/new-project adopt <n>` (`recipes/generator-routine.md`, *Adopting an existing repository*).
+
 ## Terraform layout (cloud phase, not generated today)
 
 Applies only when a project moves from the VPS to AWS or GCP (ADR-0013, ADR-0002).
