@@ -1,6 +1,6 @@
 # `/new-project`
 
-The skill that creates a Derived Project from the Template (ADR-0006). It runs in a session inside the Template, **locally on the user's machine and interactively**, never as an Autonomous Run in the cloud: it creates GitHub repositories, runs the Quality Gates (which need Docker and the stack's tools) and depends on the bootstrap, which only the user can apply with their own credentials. Machine requirements: Docker, Git and the `gh` CLI.
+The skill that creates a Derived Project from the Template (ADR-0006). It runs in a session inside the Template, **locally on the user's machine and interactively**, never as an Autonomous Run in the cloud: it creates GitHub repositories, runs the Quality Gates (which need Docker and the stack's tools) and depends on the bootstrap, which only the user can apply with their own credentials. Machine requirements: Docker, Git and the `gh` CLI. The one exception is the **draft mode** (ADR-0016, `recipes/generator-routine.md`): the user answers the same interview in Ensemble's Novo projeto wizard, the answers land on a draft issue of the Template, and the Generator routine runs the skill from that issue in a cloud session, or the user runs `/new-project draft <n>` locally.
 
 ## Flow
 
