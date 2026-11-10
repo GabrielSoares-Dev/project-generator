@@ -1,6 +1,6 @@
 ---
 name: new-project
-description: Create a Derived Project from the Template's Stack Recipes. Use when the user wants a new project, a new backend, or says "/new-project". Runs locally and interactively, or in draft mode from a draft issue of this repository ("/new-project draft <n>", or the Generator routine's "generate <n>").
+description: Create a Derived Project from the Template's Stack Recipes. Use when the user wants a new project, a new backend, or says "/new-project". Runs locally and interactively, or in draft mode from a draft issue of this repository ("/new-project draft <n>", or the Generator routine's "generate <n>"), or in adopt mode to install the agent team in an existing repository ("/new-project adopt <n>", or the Generator routine's "adopt <n>").
 ---
 
 # /new-project
@@ -20,6 +20,10 @@ This skill is being built in slices (`.scratch/build-the-factory/`). Today it co
 ## Draft mode
 
 When the run starts from a draft issue (`/new-project draft <n>`, or the Generator routine's `generate <n>`), follow `recipes/generator-routine.md` (*Draft mode of `/new-project`*): steps 2 to 4 read the issue's answers and latest brief instead of asking, a missing product or brand answer stops the run with the questions posted on the issue, the `ready-to-generate` label is the confirmation (step 15 included), every step posts a `### Progress` comment, and the run ends with the activation checklist as a reply. Every other step and rule below applies unchanged.
+
+## Adopt mode
+
+When the run starts from an adoption issue (`/new-project adopt <n>`, or the Generator routine's `adopt <n>`), follow `recipes/generator-routine.md` (*Adopting an existing repository*) instead of the steps below: no new repository and no generation from a recipe, one pull request in the existing repository with the rules, the `project` script, the CI callers and the agent team, written around its code. The rules below still apply, except that the existing code is never stripped, reformatted or rewritten.
 
 ## Tools
 
