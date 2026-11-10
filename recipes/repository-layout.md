@@ -35,7 +35,7 @@ What `/new-project` writes into every repository it creates, besides the code; w
 ├── .codex/agents/            the same roles in Codex's format (rendered, not used yet)
 ├── .vscode/                  extensions.json (frontend and mobile) and settings.json: the stack's VS Code extensions and format on save (recipes/vscode-extensions.md)
 ├── lefthook.yml              pre-commit and pre-push hooks calling the project script
-├── .github/workflows/        thin callers: `ci.yml`, `deploy.yml`, and the agent team's `agent-team.yml` and `agent-paths.yml` (recipes/github-setup.md, recipes/vps-deploy.md)
+├── .github/workflows/        thin callers: `ci.yml`, `deploy.yml`, and the agent team's `agent-paths.yml`; no dispatcher workflow, the dispatcher is Ensemble's (recipes/github-setup.md, recipes/vps-deploy.md)
 ├── .github/ISSUE_TEMPLATE/   `ticket.md`, the agent-ready ticket shape (recipes/agent-rules.md)
 ├── docker-compose.prod.yml   production stack run by Portainer on the VPS (recipes/vps-deploy.md)
 ├── .env.example              local runtime variables with placeholders (backend: also stack.env.example, the production ones)

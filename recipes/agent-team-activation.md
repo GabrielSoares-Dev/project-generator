@@ -5,9 +5,10 @@ What turns a generated project's agent team on, after `/new-project` has publish
 ## 1. GitHub, once per repository
 
 1. **The Claude GitHub App** (github.com/apps/claude) installed on every repository of the project. Without it, scheduled tasks receive no GitHub events.
-2. **Labels**: `bin/agents-labels --repository <owner>/<repo>` (`recipes/github-setup.md`, item 5).
-3. **Secrets the callers read**: `AGENT_TEAM_READ_TOKEN` (a fine-grained token: Contents read-only on agent-team while it is private, and, from agent-team v0.6.0, Issues read-only on every repository of the project, since the dispatcher reads the state of a ticket's `Blocked by` issues in the other repositories); `BACKEND_READ_TOKEN` in the frontend (Contents read-only on the backend), for `openapi:check`. Without the first, `paths` and `dispatch` fail at the checkout with `Repository not found`; without the second, the frontend's `gates` fail at `openapi:check`.
-4. **The uptime workflow off until the first deploy** (Actions, agent-team uptime, Disable workflow): before production exists it opens a `Production is down` issue that never closes.
+2. **The Ensemble GitHub App** installed on every repository of the project, which registers them in Ensemble: Ensemble is the dispatcher (ADR-0015), so without it nothing moves the work between the roles. The App needs Issues and Pull requests (write), Contents, Metadata and Actions (read), and the Issues, Issue comment, Pull request and Workflow run events.
+3. **Labels**: `bin/agents-labels --repository <owner>/<repo>` (`recipes/github-setup.md`, item 5).
+4. **Secrets the callers read**: `AGENT_TEAM_READ_TOKEN` (a fine-grained token: Contents read-only on agent-team while it is private); `BACKEND_READ_TOKEN` in the frontend (Contents read-only on the backend), for `openapi:check`. Without the first, `paths` fails at the checkout with `Repository not found`; without the second, the frontend's `gates` fail at `openapi:check`.
+5. **The uptime workflow off until the first deploy** (Actions, agent-team uptime, Disable workflow): before production exists it opens a `Production is down` issue that never closes.
 
 ## 2. A cloud environment where `./project check` passes
 
