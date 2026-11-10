@@ -40,7 +40,7 @@ The **answers object** holds what the wizard collected. Every key is optional un
 
 The Generator writes only comments. Ensemble shows the latest one of each kind:
 
-- **A reply**: an ordinary comment that answers the user's last message, in the user's language. It is the PM side of the wizard's chat.
+- **A reply**: a comment that answers the user's last message, in the user's language, and ends with the line `<!-- generator -->`. It is the PM side of the wizard's chat. The routine comments with the user's account, so the marker is what tells its replies from the user's messages; Ensemble hides it.
 - **The brief**: a comment whose first line is `### Brief`, followed by one fenced `json` block. A new brief is posted whenever the conversation changes it:
 
 ```json
@@ -83,7 +83,7 @@ The task runs in the Template repository, in an environment with Docker (the clo
 
 ```text
 You are the Generator of the Template. The trigger text is "draft <n>" or "generate <n>"; read issue #<n> of this repository, its body and every comment, and follow recipes/generator-routine.md.
-- "draft <n>": run the discovery and the interview of recipes/new-project.md as a conversation on the issue. Reply to the last message with at most four questions or the recommendation table, then post a new "### Brief" comment when the brief changed. Write nothing to disk and create nothing.
+- "draft <n>": run the discovery and the interview of recipes/new-project.md as a conversation on the issue. Reply to the last message with at most four questions or the recommendation table, ending the reply with the line <!-- generator -->, then post a new "### Brief" comment when the brief changed. Write nothing to disk and create nothing.
 - "generate <n>": the issue must carry ready-to-generate; run /new-project in draft mode from the issue, posting a "### Progress" comment at every step.
 Reply in the language of the user's messages. Never ask for secrets, never create secrets or scheduled tasks, and never touch another issue.
 ```
