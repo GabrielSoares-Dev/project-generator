@@ -6,6 +6,7 @@ The Template (this repository, named **Project Generator**): a project factory t
 - `recipes/backend/`, `recipes/frontend/` (React: `react.md`), `recipes/mobile/`: Stack Recipes.
 - `recipes/quality-gates.md`, `recipes/coding-standards.md`: what every generated repository must pass and how its code is written.
 - `recipes/repository-layout.md`, `recipes/agent-rules.md`, `recipes/autonomous-runs.md`, `recipes/new-project.md`: what a generated repository contains, what each of its rule files holds, how the agent works in it, and how it is created.
+- `recipes/generator-routine.md`: creating a project from Ensemble's wizard (ADR-0016): the draft issue, the Generator routine Ensemble fires, and the draft mode of `/new-project`.
 - `recipes/dev-commands.md`: the `project` script every generated repository has (`project start:dev`, `project check`…), the same commands in every stack.
 - `recipes/vscode-extensions.md`: the VS Code extensions each generated repository installs or recommends, per stack.
 - `recipes/vps-deploy.md`: production on a VPS (ADR-0013): the `prod` image, `docker-compose.prod.yml`, the deploy workflow (Docker Hub, Portainer webhook), what the VPS needs once.

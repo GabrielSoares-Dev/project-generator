@@ -36,6 +36,14 @@ _Avoid_: pipeline repo, CI templates
 A Claude Code cloud session, started on demand from the phone, in which the agent implements tickets and opens pull requests unsupervised; merging always stays with the human.
 _Avoid_: overnight run, night shift, auto-merge
 
+**Draft**:
+An issue of the Template repository, labelled `project-draft`, that holds a project being created from Ensemble's wizard: the idea, the answers, the Generator's replies, brief and progress (`recipes/generator-routine.md`).
+_Avoid_: plan issue, project request
+
+**Generator**:
+The scheduled task in the Template that Ensemble fires through its API trigger: it holds a Draft's conversation and runs `/new-project` in draft mode on `generate <n>`.
+_Avoid_: generator bot, factory job
+
 **Local Review**:
 How the human verifies a pull request before merging: checking the branch out and running that repository on their own machine (the backend in Docker Compose, the web frontend with pnpm, the mobile app as a development build on their phone).
 _Avoid_: preview environment, staging, QA environment

@@ -1,6 +1,6 @@
 ---
 name: new-project
-description: Create a Derived Project from the Template's Stack Recipes. Use when the user wants a new project, a new backend, or says "/new-project". Runs locally and interactively, never as an Autonomous Run.
+description: Create a Derived Project from the Template's Stack Recipes. Use when the user wants a new project, a new backend, or says "/new-project". Runs locally and interactively, or in draft mode from a draft issue of this repository ("/new-project draft <n>", or the Generator routine's "generate <n>").
 ---
 
 # /new-project
@@ -16,6 +16,10 @@ This skill is being built in slices (`.scratch/build-the-factory/`). Today it co
 - **Create mode**: write the repositories to a local directory, with `.github/workflows/ci.yml` and `deploy.yml` callers. **Publishing to GitHub** (step 15) happens only when the user asks and confirms. No calls to Docker Hub, Portainer or any cloud: the deployment files are generated and proven locally (`recipes/vps-deploy.md`, ADR-0013), never run. There is no Terraform in this phase.
 - **Backend: PHP Laravel + PostgreSQL** (`recipes/backend/php.md`, `recipes/backend/clean-architecture.md`), or **Go + PostgreSQL** (`recipes/backend/go.md`, the learning stack: only when the user explicitly asks for Go, never recommended), and **web frontend: React** (`recipes/frontend/react.md`). Other stacks: say they are not available yet and stop.
 - **The interview decides everything**: no fixed answers. The inputs, what is available today and where each answer lands are in `recipes/new-project.md` (*The interview*). The deploy target is always the VPS; Docker Hub user, host ports and domain feed the deploy files, and budget and alert email are only recorded.
+
+## Draft mode
+
+When the run starts from a draft issue (`/new-project draft <n>`, or the Generator routine's `generate <n>`), follow `recipes/generator-routine.md` (*Draft mode of `/new-project`*): steps 2 to 4 read the issue's answers and latest brief instead of asking, a missing product or brand answer stops the run with the questions posted on the issue, the `ready-to-generate` label is the confirmation (step 15 included), every step posts a `### Progress` comment, and the run ends with the activation checklist as a reply. Every other step and rule below applies unchanged.
 
 ## Tools
 
