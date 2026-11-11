@@ -77,17 +77,19 @@ The Generator is a scheduled task with an **API trigger** and no schedule. Ensem
 - `draft <issue number>`: the user wrote in the chat. Ensemble has already posted the message as a comment and updated the body.
 - `generate <issue number>`: the user pressed **Gerar**. Ensemble has applied `ready-to-generate` and posted a last comment, `Gerar`.
 - `adopt-scan <issue number>` and `adopt <issue number>`: an adoption of an existing repository (*Adopting an existing repository* below).
+- `create-repo <issue number>`: a request for one new repository (*Creating one repository* below).
 
 ## The Generator's prompt
 
 The task runs in the Template repository, in an environment with Docker (the cloud default has it) and network access to the package registries. Its prompt:
 
 ```text
-You are the Generator of the Template. The trigger text is "draft <n>" or "generate <n>"; read issue #<n> of this repository, its body and every comment, and follow recipes/generator-routine.md.
+You are the Generator of the Template. The trigger text is "draft <n>", "generate <n>", "adopt-scan <n>", "adopt <n>" or "create-repo <n>"; read issue #<n> of this repository, its body and every comment, and follow recipes/generator-routine.md.
 - "draft <n>": run the discovery and the interview of recipes/new-project.md as a conversation on the issue. Reply to the last message with at most four questions or the recommendation table, ending the reply with the line <!-- generator -->, then post a new "### Brief" comment when the brief changed. Write nothing to disk and create nothing.
 - "generate <n>": the issue must carry ready-to-generate; run /new-project in draft mode from the issue, posting a "### Progress" comment at every step.
 - "adopt-scan <n>": read the repository the issue names, without changing it, and post a "### Diagnosis" comment.
 - "adopt <n>": the issue must carry ready-to-adopt; run /new-project in adopt mode on that repository, posting a "### Progress" comment at every step.
+- "create-repo <n>": the issue must carry ready-to-create; run /new-project in repository mode from the issue, posting a "### Progress" comment at every step.
 Reply in the language of the user's messages. Never ask for secrets, never create secrets or scheduled tasks, and never touch another issue.
 ```
 
@@ -150,6 +152,25 @@ The **adopt mode** of `/new-project` works on one existing repository and never 
 
 Its progress uses the step keys `session`, `read`, `rules`, `agent-team`, `check`, `labels` and `pull-request`, and sets `pullRequestUrl` once the pull request exists.
 
+## Creating one repository
+
+The same routine creates **one** repository without a project (ADR-0018). Ensemble opens a **repository request** issue in the Template:
+
+- **Title**: `Repository: <owner>/<name>`.
+- **Labels**: `repository-request` and `ready-to-create`, both from the start: there is no conversation to wait for.
+- **Body**, written only by Ensemble: `## Repository` with the full name on one line, then `## Answers` with one fenced `json` block: `{ "repository": "<owner>/<name>", "kind": "backend" | "frontend" | "mobile", "stack": "<option of the Stack Recipe>", "visibility": "private" | "public", "project": "<project slug>" }`; `project` is optional and only names where the repository will be listed.
+
+### `create-repo <n>`
+
+The **repository mode** of `/new-project` works on that one request:
+
+1. It reads the answers; `kind`, `stack`, the name and the owner must be set and the stack must be an available Stack Recipe of the kind, or the run stops with the question as a reply and removes `ready-to-create`.
+2. It generates one repository from the Stack Recipe, with the product and brand values the recipe needs taken from defaults (the name as the product name, the language of the user's messages, the recipe's default colors); the description of the first pull request lists what was defaulted. The gates and the proofs run as in draft mode.
+3. It installs the agent team as in `recipes/agent-rules.md` (*The agent team*) and publishes the repository with the owner and visibility of the answers (`recipes/github-setup.md`: rebase-only settings, branch protection, labels). When the session cannot create or push to it, the run fails on `repositories` and leaves nothing behind.
+4. The end is a reply with the repository's URL and the activation checklist of `recipes/agent-team-activation.md` for it. The Generator then closes the issue as completed.
+
+Its progress uses the step keys `session`, `code`, `gates`, `agent-team`, `repositories` and `first-pr`, in the format of the draft progress, and lists the created repository's URL when `repositories` is done.
+
 ## Setting up the Generator, once
 
-On claude.ai, the user creates one task in the Template repository with the prompt above, no schedule and no connectors, and turns push notifications off. The labels `project-draft`, `ready-to-generate`, `project-adoption` and `ready-to-adopt` are created once in the Template repository. Then they add an **API trigger** on the web, which shows its token once, and paste the URL and the token in Ensemble's settings for the Generator. Ensemble never shows the token again.
+On claude.ai, the user creates one task in the Template repository with the prompt above, no schedule and no connectors, and turns push notifications off. The labels `project-draft`, `ready-to-generate`, `project-adoption`, `ready-to-adopt`, `repository-request` and `ready-to-create` are created once in the Template repository. Then they add an **API trigger** on the web, which shows its token once, and paste the URL and the token in Ensemble's settings for the Generator. Ensemble never shows the token again.

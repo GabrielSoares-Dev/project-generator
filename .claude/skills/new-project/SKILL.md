@@ -1,6 +1,6 @@
 ---
 name: new-project
-description: Create a Derived Project from the Template's Stack Recipes. Use when the user wants a new project, a new backend, or says "/new-project". Runs locally and interactively, or in draft mode from a draft issue of this repository ("/new-project draft <n>", or the Generator routine's "generate <n>"), or in adopt mode to install the agent team in an existing repository ("/new-project adopt <n>", or the Generator routine's "adopt <n>").
+description: Create a Derived Project from the Template's Stack Recipes. Use when the user wants a new project, a new backend, or says "/new-project". Runs locally and interactively, or in draft mode from a draft issue of this repository ("/new-project draft <n>", or the Generator routine's "generate <n>"), in adopt mode to install the agent team in an existing repository ("/new-project adopt <n>", or the Generator routine's "adopt <n>"), or in repository mode to create one repository on its own ("/new-project repo <n>", or the Generator routine's "create-repo <n>").
 ---
 
 # /new-project
@@ -24,6 +24,10 @@ When the run starts from a draft issue (`/new-project draft <n>`, or the Generat
 ## Adopt mode
 
 When the run starts from an adoption issue (`/new-project adopt <n>`, or the Generator routine's `adopt <n>`), follow `recipes/generator-routine.md` (*Adopting an existing repository*) instead of the steps below: no new repository and no generation from a recipe, one pull request in the existing repository with the rules, the `project` script, the CI callers and the agent team, written around its code. The rules below still apply, except that the existing code is never stripped, reformatted or rewritten.
+
+## Repository mode
+
+When the run starts from a repository request issue (`/new-project repo <n>`, or the Generator routine's `create-repo <n>`), follow `recipes/generator-routine.md` (*Creating one repository*): no interview and no project, one repository generated from the Stack Recipe the answers name, with its gates, the agent team and its publication. The rules below apply to that one repository.
 
 ## Tools
 
