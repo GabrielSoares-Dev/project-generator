@@ -43,7 +43,7 @@ Asked in the user's language, in three groups (identity, product, technology), a
 | Docker Hub user, host ports | the Docker Hub account name; a free port per repository on the VPS | free text, numbers | image names and ports in `docker-compose.prod.yml` and `deploy.yml` (`recipes/vps-deploy.md`) |
 | Monthly budget, alert email | an amount, an email | free text | recorded in the plan and the ADRs for the later cloud phase; nothing is created |
 | Repositories | backend, web frontend, mobile app | backend and web frontend | what is generated; mobile: not yet available |
-| Backend | language and variant | PHP with Laravel; Go (learning stack, only when the user asks for it, `recipes/backend/go.md`) | Java, Node: not yet available |
+| Backend | language and variant | PHP with Laravel; Node with the custom stack (Fastify, Drizzle, `recipes/backend/node.md`); Go (learning stack, only when the user asks for it, `recipes/backend/go.md`) | Java; Node with NestJS or plain, and Node on Lambda: not yet available |
 | Frontend | framework and design system | React with shadcn/ui | Angular: not yet available |
 | Database | engine | PostgreSQL | MySQL, DynamoDB, Firestore: not yet available |
 | Authentication | own JWT or an external provider | none generated yet | own JWT, Cognito, Firebase Auth, Auth0, Clerk: not yet available |
